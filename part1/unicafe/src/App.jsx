@@ -6,11 +6,34 @@ const Title = ({ text }) => {
 const Button = ({ onClick, text }) => {
   return <button onClick={onClick}>{text}</button>;
 };
-const Display = ({ value, text }) => {
+
+const StatisticLine = ({ text, value }) => {
   return (
-    <div>
+    <tr>
       {text} {value}
-    </div>
+    </tr>
+  );
+};
+
+const Statistics = ({ good, neutral, bad }) => {
+  const all = good + neutral + bad;
+  const average = (good * 1 + bad * -1) / all;
+  const positive = (good * 100) / all;
+  console.log("all ", all);
+  if (all === 0) {
+    return <div>No feedback given</div>;
+  }
+  return (
+    <table>
+      <tbody>
+        <StatisticLine text="Good" value={good} />
+        <StatisticLine text="Neutral" value={neutral} />
+        <StatisticLine text="Bad" value={bad} />
+        <StatisticLine text="All" value={all} />
+        <StatisticLine text="Average" value={average} />
+        <StatisticLine text="Positive" value={positive} />
+      </tbody>
+    </table>
   );
 };
 
@@ -29,9 +52,6 @@ const App = () => {
   const handleBadClick = () => {
     setBad(bad + 1);
   };
-  const all = good + bad + neutral
-  const avergae = ((good * 1) + (bad * -1)) / all
-  const positive = (good * 100) / all
 
   return (
     <div>
@@ -40,12 +60,8 @@ const App = () => {
       <Button onClick={handleNeutralClick} text="neutral" />
       <Button onClick={handleBadClick} text="bad" />
       <Title text="statistics" />
-      <Display value={good} text="good" />
-      <Display value={neutral} text="neutral" />
-      <Display value={bad} text="bad" />
-      <Display value={all} text="all" />
-      <Display value={avergae} text="average" />
-      <Display value={positive} text="positive" />
+      <br />
+      <Statistics good={good} neutral={neutral} bad={bad} />
     </div>
   );
 };
