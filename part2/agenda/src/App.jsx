@@ -8,6 +8,48 @@ const Person = ({ person }) => {
   );
 };
 
+const Persons = ({ personsToShow }) => {
+  return (
+    <>
+      <ul>
+        {personsToShow.map((person) => (
+          <Person key={person.id} person={person} />
+        ))}
+      </ul>
+    </>
+  );
+};
+
+const PersonForm = (props) => {
+  return (
+    <>
+      <form onSubmit={props.addPerson}>
+        <div>
+          name:{" "}
+          <input value={props.newName} onChange={props.handleNameChange} />
+        </div>
+        <div>
+          number:{" "}
+          <input value={props.newNumber} onChange={props.handleNumberChange} />
+        </div>
+        <div>
+          <button type="submit">add</button>
+        </div>
+      </form>
+    </>
+  );
+};
+
+const Filter = (props) => {
+  return (
+    <>
+      <div>
+        filter shown with <input value={props.filter} onChange={props.handleFilterChange} />
+      </div>
+    </>
+  );
+};
+
 const App = () => {
   const [persons, setPersons] = useState([
     { name: "Arto Hellas", number: "040-123456", id: 1 },
@@ -51,32 +93,24 @@ const App = () => {
   };
   let personsToShow = [];
   filter != ""
-    ? (personsToShow = persons.filter((p) => p.name.toLowerCase().includes(filter.toLowerCase())))
+    ? (personsToShow = persons.filter((p) =>
+        p.name.toLowerCase().includes(filter.toLowerCase())
+      ))
     : (personsToShow = persons);
   return (
     <div>
       <h2>Phonebook</h2>
-      <div>
-        filter shown with <input value={filter} onChange={handleFilterChange} />
-      </div>
-      <h2>Add new</h2>
-      <form onSubmit={addPerson}>
-        <div>
-          name: <input value={newName} onChange={handleNameChange} />
-        </div>
-        <div>
-          number: <input value={newNumber} onChange={handleNumberChange} />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
-      <h2>Numbers</h2>
-      <ul>
-        {personsToShow.map((person) => (
-          <Person key={person.id} person={person} />
-        ))}
-      </ul>
+      <Filter filter={filter} handleFilterChange={handleFilterChange}/>
+      <h3>Add a new</h3>
+      <PersonForm
+        addPerson={addPerson}
+        newName={newName}
+        handleNameChange={handleNameChange}
+        newNumber={newNumber}
+        handleNumberChange={handleNumberChange}
+      />
+      <h3>Numbers</h3>
+      <Persons personsToShow={personsToShow} />
     </div>
   );
 };
