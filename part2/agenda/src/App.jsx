@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from 'axios'
+import personsService from "./services/persons";
 
 const Person = ({ person }) => {
   return (
@@ -45,7 +45,8 @@ const Filter = (props) => {
   return (
     <>
       <div>
-        filter shown with <input value={props.filter} onChange={props.handleFilterChange} />
+        filter shown with{" "}
+        <input value={props.filter} onChange={props.handleFilterChange} />
       </div>
     </>
   );
@@ -58,14 +59,12 @@ const App = () => {
   const [filter, setFilter] = useState("");
 
   useEffect(() => {
-    console.log('effect')
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        console.log('promise fulfilled')
-        setPersons(response.data)
-      })
-  }, [])
+    console.log("effect");
+    personsService.getAll().then((response) => {
+      console.log("promise fulfilled");
+      setPersons(response);
+    });
+  }, []);
 
   const handleNameChange = (event) => {
     setNewName(event.target.value);
@@ -90,11 +89,12 @@ const App = () => {
       const personObject = {
         name: newName,
         number: newNumber,
-        id: persons.length + 1,
       };
-      setPersons(persons.concat(personObject));
-      setNewName("");
-      setNewNumber("");
+      personsService.create(personObject).then((returnedPerson) => {
+        setPersons(persons.concat(returnedPerson));
+        setNewName("");
+        setNewNumber("");
+      });
     }
   };
   let personsToShow = [];
@@ -106,7 +106,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Filter filter={filter} handleFilterChange={handleFilterChange}/>
+      <Filter filter={filter} handleFilterChange={handleFilterChange} />
       <h3>Add a new</h3>
       <PersonForm
         addPerson={addPerson}
