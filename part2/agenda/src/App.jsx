@@ -57,7 +57,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState("");
   const [filter, setFilter] = useState("");
 
-  const hook = () => {
+  useEffect(() => {
     console.log('effect')
     axios
       .get('http://localhost:3001/persons')
@@ -65,9 +65,7 @@ const App = () => {
         console.log('promise fulfilled')
         setPersons(response.data)
       })
-  }
-  
-  useEffect(hook, [])
+  }, [])
 
   const handleNameChange = (event) => {
     setNewName(event.target.value);
