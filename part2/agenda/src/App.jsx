@@ -1,23 +1,37 @@
 import { useState, useEffect } from "react";
 import personsService from "./services/persons";
 
-const Person = ({ person }) => {
+const Person = ({ person, onDelete }) => {
+  const handleDeletePerson = () => {
+    if (window.confirm(`Delete ${person.name}?`)) {
+      personsService
+        .deletePerson(person.id)
+        .then(() => onDelete(person.id)) // Llama a la función para actualizar el estado
+        .catch((error) => {
+          alert(
+            `Failed to delete ${person.name}. It may have already been removed.`
+          );
+          console.error(error);
+        });
+    }
+  };
   return (
-    <li key={person.name}>
-      {person.name} {person.number}
+    <li>
+      {person.name} {person.number}{" "}
+      <button id={person.id} onClick={handleDeletePerson}>
+        delete
+      </button>
     </li>
   );
 };
 
-const Persons = ({ personsToShow }) => {
+const Persons = ({ personsToShow, onDelete }) => {
   return (
-    <>
-      <ul>
-        {personsToShow.map((person) => (
-          <Person key={person.id} person={person} />
-        ))}
-      </ul>
-    </>
+    <ul>
+      {personsToShow.map((person) => (
+        <Person key={person.id} person={person} onDelete={onDelete} />
+      ))}
+    </ul>
   );
 };
 
@@ -97,12 +111,15 @@ const App = () => {
       });
     }
   };
-  let personsToShow = [];
-  filter != ""
-    ? (personsToShow = persons.filter((p) =>
-        p.name.toLowerCase().includes(filter.toLowerCase())
-      ))
-    : (personsToShow = persons);
+
+  const deletePerson = (id) => {
+    setPersons(persons.filter((p) => p.id !== id));
+  };
+
+  const personsToShow = persons.filter((p) =>
+    p.name.toLowerCase().includes(filter.toLowerCase())
+  );
+  
   return (
     <div>
       <h2>Phonebook</h2>
@@ -116,7 +133,7 @@ const App = () => {
         handleNumberChange={handleNumberChange}
       />
       <h3>Numbers</h3>
-      <Persons personsToShow={personsToShow} />
+      <Persons personsToShow={personsToShow} onDelete={deletePerson} />
     </div>
   );
 };
