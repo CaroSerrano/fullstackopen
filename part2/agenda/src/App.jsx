@@ -1,76 +1,17 @@
 import { useState, useEffect } from "react";
 import personsService from "./services/persons";
+import Notification from "./components/Notification";
+import Persons from "./components/Persons";
+import PersonForm from "./components/PersonForm";
+import Filter from "./components/Filter";
 
-const Person = ({ person, onDelete }) => {
-  const handleDeletePerson = () => {
-    if (window.confirm(`Delete ${person.name}?`)) {
-      personsService
-        .deletePerson(person.id)
-        .then(() => onDelete(person.id))
-        .catch((error) => {
-          alert(
-            `Failed to delete ${person.name}. It may have already been removed.`
-          );
-          console.error(error);
-        });
-    }
-  };
-  return (
-    <li>
-      {person.name} {person.number}{" "}
-      <button id={person.id} onClick={handleDeletePerson}>
-        delete
-      </button>
-    </li>
-  );
-};
-
-const Persons = ({ personsToShow, onDelete }) => {
-  return (
-    <ul>
-      {personsToShow.map((person) => (
-        <Person key={person.id} person={person} onDelete={onDelete} />
-      ))}
-    </ul>
-  );
-};
-
-const PersonForm = (props) => {
-  return (
-    <>
-      <form onSubmit={props.addPerson}>
-        <div>
-          name:{" "}
-          <input value={props.newName} onChange={props.handleNameChange} />
-        </div>
-        <div>
-          number:{" "}
-          <input value={props.newNumber} onChange={props.handleNumberChange} />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
-    </>
-  );
-};
-
-const Filter = (props) => {
-  return (
-    <>
-      <div>
-        filter shown with{" "}
-        <input value={props.filter} onChange={props.handleFilterChange} />
-      </div>
-    </>
-  );
-};
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [filter, setFilter] = useState("");
+  const [notificationMessage, setNotificationMessage] = useState(null)
 
   useEffect(() => {
     console.log("effect");
@@ -108,6 +49,10 @@ const App = () => {
           setPersons(persons.concat(returnedPerson));
           setNewName("");
           setNewNumber("");
+          setNotificationMessage(`${personObject.name} successfully added to phonebook!`)
+          setTimeout(() => {
+            setNotificationMessage(null)
+          }, 3000)
         })
         .catch((error) => {
           alert(`Failed to create ${personObject.name}.`);
@@ -134,6 +79,10 @@ const App = () => {
           );
           setNewName("");
           setNewNumber("");
+          setNotificationMessage(`${person.name} successfully updated!`)
+          setTimeout(() => {
+            setNotificationMessage(null)
+          }, 3000)
         })
         .catch((error) => {
           alert(`Failed to update ${person.name}.`);
@@ -156,6 +105,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={notificationMessage}/>
       <Filter filter={filter} handleFilterChange={handleFilterChange} />
       <h3>Add a new</h3>
       <PersonForm
