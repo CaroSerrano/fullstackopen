@@ -49,13 +49,16 @@ const App = () => {
           setPersons(persons.concat(returnedPerson));
           setNewName("");
           setNewNumber("");
-          setNotificationMessage(`${personObject.name} successfully added to phonebook!`)
+          setNotificationMessage({message: `${personObject.name} successfully added to phonebook!`, error: false})
           setTimeout(() => {
             setNotificationMessage(null)
           }, 3000)
         })
         .catch((error) => {
-          alert(`Failed to create ${personObject.name}.`);
+          setNotificationMessage({message: `Failed to create ${personObject.name}.`, error: true})
+          setTimeout(() => {
+            setNotificationMessage(null)
+          }, 3000);
           console.error(error);
         });
     }
@@ -79,13 +82,16 @@ const App = () => {
           );
           setNewName("");
           setNewNumber("");
-          setNotificationMessage(`${person.name} successfully updated!`)
+          setNotificationMessage({message: `${person.name} successfully updated!`, error: false})
           setTimeout(() => {
             setNotificationMessage(null)
           }, 3000)
         })
         .catch((error) => {
-          alert(`Failed to update ${person.name}.`);
+          setNotificationMessage({message: `Failed to update ${person.name}.`, error: true})
+          setTimeout(() => {
+            setNotificationMessage(null)
+          }, 3000)
           console.error(error);
         });
     } else {
