@@ -96,39 +96,54 @@ const App = () => {
     event.preventDefault();
     const person = persons.find((p) => p.name === newName);
     if (person) {
-      if (
-        window.confirm(
-          `${newName} is already added to phonebook, replace the old number with a new one?`
-        )
-      ) {
-        const fieldsToUpdate = {
-          name: newName,
-          number: newNumber,
-        };
-        personsService.update(person.id, fieldsToUpdate);
-        setPersons(
-          persons
-            .filter((p) => p.id != person.id)
-            .concat({ ...person, number: newNumber })
-        );
-        setNewName("");
-        setNewNumber("");
-      } else {
-        setNewName("");
-        setNewNumber("");
-      }
+      updatePerson(person)
     } else {
       const personObject = {
         name: newName,
         number: newNumber,
       };
-      personsService.create(personObject).then((returnedPerson) => {
-        setPersons(persons.concat(returnedPerson));
-        setNewName("");
-        setNewNumber("");
-      });
+      personsService
+        .create(personObject)
+        .then((returnedPerson) => {
+          setPersons(persons.concat(returnedPerson));
+          setNewName("");
+          setNewNumber("");
+        })
+        .catch((error) => {
+          alert(`Failed to create ${personObject.name}.`);
+          console.error(error);
+        });
     }
   };
+
+  const updatePerson = (person) => {
+    if (
+      window.confirm(
+        `${newName} is already added to phonebook, replace the old number with a new one?`
+      )
+    ) {
+      const fieldsToUpdate = {
+        name: newName,
+        number: newNumber,
+      };
+      personsService
+        .update(person.id, fieldsToUpdate)
+        .then((returnedPerson) => {
+          setPersons(
+            persons.filter((p) => p.id != person.id).concat(returnedPerson)
+          );
+          setNewName("");
+          setNewNumber("");
+        })
+        .catch((error) => {
+          alert(`Failed to update ${person.name}.`);
+          console.error(error);
+        });
+    } else {
+      setNewName("");
+      setNewNumber("");
+    }
+  }
 
   const deletePerson = (id) => {
     setPersons(persons.filter((p) => p.id !== id));
