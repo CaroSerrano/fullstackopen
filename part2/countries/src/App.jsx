@@ -1,0 +1,70 @@
+import { useState, useEffect } from "react";
+import axios from "axios";
+
+const Countries = ({ countries }) => {
+  if (!countries || countries.length === 0) return null;
+
+  if (countries.length > 10) {
+    return <p>Too many matches, specify another filter</p>;
+  } else if (countries.length > 1) {
+    return (
+      <ul>
+        {countries.map((c) => (
+          <li key={c.name.common}>{c.name.common}</li>
+        ))}
+      </ul>
+    );
+  } else {
+    const country = countries[0];
+    return (
+      <>
+        <h1>{country.name.common}</h1>
+        <p>Capital: {country.capital}</p>
+        <p>Area: {country.area}</p>
+        <p>Languages:</p>
+        <ul>{Object.entries(country.languages).map(([key, value]) => <li key={key}>{value}</li>)}</ul>
+        <img src={country.flags.png} alt={country.flags.alt} />
+      </>
+    );
+  }
+};
+
+
+function App() {
+  const [value, setValue] = useState("");
+  const [countries, setCountries] = useState(null);
+  const [filteredCountries, setFilteredCountries] = useState([])
+
+  useEffect(() => {
+    axios.get("https://studies.cs.helsinki.fi/restcountries/api/all").then((response) => {
+      setCountries(response.data)
+    });
+  }, []);
+
+  const handleCountry = (event) => {
+    const inputValue = event.target.value;
+    setValue(inputValue);
+  
+    if (inputValue.length > 0 && countries) {
+      const matches = countries.filter((c) =>
+        c.name.common.toLowerCase().includes(inputValue.toLowerCase())
+      );
+      setFilteredCountries(matches);
+    } else {
+      setFilteredCountries([]);
+    }
+  };
+  
+  return (
+    <>
+      <div>
+        find countries <input value={value} onChange={handleCountry} />
+      </div>
+      <div>
+        <Countries countries= {filteredCountries}/>
+      </div>
+    </>
+  );
+}
+
+export default App;
