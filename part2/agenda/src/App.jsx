@@ -6,7 +6,7 @@ const Person = ({ person, onDelete }) => {
     if (window.confirm(`Delete ${person.name}?`)) {
       personsService
         .deletePerson(person.id)
-        .then(() => onDelete(person.id)) // Llama a la función para actualizar el estado
+        .then(() => onDelete(person.id))
         .catch((error) => {
           alert(
             `Failed to delete ${person.name}. It may have already been removed.`
@@ -94,11 +94,29 @@ const App = () => {
 
   const addPerson = (event) => {
     event.preventDefault();
-
-    if (persons.find((p) => p.name === newName)) {
-      alert(`${newName} is already added to phonebook`);
-      setNewName("");
-      setNewNumber("");
+    const person = persons.find((p) => p.name === newName);
+    if (person) {
+      if (
+        window.confirm(
+          `${newName} is already added to phonebook, replace the old number with a new one?`
+        )
+      ) {
+        const fieldsToUpdate = {
+          name: newName,
+          number: newNumber,
+        };
+        personsService.update(person.id, fieldsToUpdate);
+        setPersons(
+          persons
+            .filter((p) => p.id != person.id)
+            .concat({ ...person, number: newNumber })
+        );
+        setNewName("");
+        setNewNumber("");
+      } else {
+        setNewName("");
+        setNewNumber("");
+      }
     } else {
       const personObject = {
         name: newName,
@@ -119,7 +137,7 @@ const App = () => {
   const personsToShow = persons.filter((p) =>
     p.name.toLowerCase().includes(filter.toLowerCase())
   );
-  
+
   return (
     <div>
       <h2>Phonebook</h2>
