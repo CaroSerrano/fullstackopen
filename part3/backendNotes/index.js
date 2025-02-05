@@ -1,5 +1,8 @@
 const express = require("express");
 const app = express();
+const cors = require('cors')
+
+app.use(cors())
 
 // El json-parser funciona para que tome los datos JSON de una solicitud, los transforme en un objeto JavaScript y luego los adjunte a la propiedad body del objeto request antes de llamar al controlador de ruta.
 app.use(express.json());
@@ -75,7 +78,7 @@ app.delete("/api/notes/:id", (request, response) => {
   response.status(204).end();
 });
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
