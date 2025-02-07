@@ -2,18 +2,12 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const mongoose = require("mongoose");
+const Blog = require('./models/blog');
 
 app.use(cors());
 app.use(express.json());
 
-const blogSchema = new mongoose.Schema({
-  title: String,
-  author: String,
-  url: String,
-  likes: Number,
-});
 
-const Blog = mongoose.model("Blog", blogSchema);
 
 const mongoUrl =
   "mongodb+srv://fullstackopen:1234@cluster0.unnrajh.mongodb.net/blogApp?retryWrites=true&w=majority&appName=Cluster0";
