@@ -66,9 +66,17 @@ test("property likes has a default value of zero", async () => {
     .send(blogWithoutLikes)
     .expect(201)
     .expect("Content-Type", /application\/json/);
-    console.log("saved blog", savedBlog);
-    
+
   expect(savedBlog._body.likes).toBe(0);
+});
+
+test("title and url required", async () => {
+  const blogWithMissingParams = {
+    author: "Fulanito",
+    url: "http://sklnlskdnvlsknvsl",
+    likes: 6,
+  };
+  await api.post("/api/blogs").send(blogWithMissingParams).expect(400);
 });
 
 afterAll(() => {
