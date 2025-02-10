@@ -8,7 +8,8 @@ const Note = require('../models/note')
 
 beforeEach(async () => {
   await Note.deleteMany({})
-  await Note.insertMany(helper.initialNotes)
+  const initialNotes = await helper.setInitialNotes();
+  await Note.insertMany(initialNotes)
 })
 
 describe('when there is initially some notes saved', () => {
@@ -21,8 +22,8 @@ describe('when there is initially some notes saved', () => {
 
   test('all notes are returned', async () => {
     const response = await api.get('/api/notes')
-
-    expect(response.body).toHaveLength(helper.initialNotes.length)
+    const initialNotes = await helper.setInitialNotes();
+    expect(response.body).toHaveLength(initialNotes.length)
   })
 
   test('a specific note is within the returned notes', async () => {
@@ -41,13 +42,20 @@ describe('viewing a specific note', () => {
     const notesAtStart = await helper.notesInDb()
 
     const noteToView = notesAtStart[0]
+    console.log("noteToView", noteToView);
+    
 
     const resultNote = await api
       .get(`/api/notes/${noteToView.id}`)
       .expect(200)
       .expect('Content-Type', /application\/json/)
-
-    expect(resultNote.body).toEqual(noteToView)
+    console.log("resultNote.body", resultNote.body);
+    
+    expect(resultNote.body).toEqual({
+      ...noteToView,
+      user: noteToView.user.toString(),
+    });
+    
   })
 
   test('fails with statuscode 404 if note does not exist', async () => {
@@ -72,6 +80,7 @@ describe('addition of a new note', () => {
     const newNote = {
       content: 'async/await simplifies making async calls',
       important: true,
+      userId: "67aa5dde03dcf8cb4779d98a"
     }
 
     await api
@@ -81,7 +90,8 @@ describe('addition of a new note', () => {
       .expect('Content-Type', /application\/json/)
 
     const notesAtEnd = await helper.notesInDb()
-    expect(notesAtEnd).toHaveLength(helper.initialNotes.length + 1)
+    const initialNotes = await helper.setInitialNotes();
+    expect(notesAtEnd).toHaveLength(initialNotes.length + 1)
 
     const contents = notesAtEnd.map(n => n.content)
     expect(contents).toContain(
@@ -100,8 +110,8 @@ describe('addition of a new note', () => {
       .expect(400)
 
     const notesAtEnd = await helper.notesInDb()
-
-    expect(notesAtEnd).toHaveLength(helper.initialNotes.length)
+    const initialNotes = await helper.setInitialNotes();
+    expect(notesAtEnd).toHaveLength(initialNotes.length)
   })
 })
 
@@ -115,9 +125,9 @@ describe('deletion of a note', () => {
       .expect(204)
 
     const notesAtEnd = await helper.notesInDb()
-
+    const initialNotes = await helper.setInitialNotes();
     expect(notesAtEnd).toHaveLength(
-      helper.initialNotes.length - 1
+      initialNotes.length - 1
     )
 
     const contents = notesAtEnd.map(r => r.content)

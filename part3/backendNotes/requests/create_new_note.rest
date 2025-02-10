@@ -2,6 +2,16 @@ POST http://localhost:3001/api/notes
 Content-Type: application/json
 
 {
-    "content": "Nueva nota",
+    "content": "asdakla",
+    "important": true,
+    "userId": "67aa4bf52f73510f9f91d46c"
+}
+
+###
+PUT http://localhost:3001/api/notes/67aa804a75055869fe28c
+Content-Type: application/json
+
+{
+
     "important": true
 }
