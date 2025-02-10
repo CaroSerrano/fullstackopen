@@ -37,7 +37,8 @@ test("a valid blog can be added", async () => {
   const newBlog = {
     title: "async/await simplifies making async calls",
     author: "Fulanito",
-    url: "http://sklnlskdnvlsknvsl"
+    url: "http://sklnlskdnvlsknvsl",
+    likes: 2,
   };
 
   await api
@@ -46,11 +47,28 @@ test("a valid blog can be added", async () => {
     .expect(201)
     .expect("Content-Type", /application\/json/);
 
-  const blogsAtEnd = await helper.blogsInDb()
+  const blogsAtEnd = await helper.blogsInDb();
   expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1);
 
   const titles = blogsAtEnd.map((n) => n.title);
   expect(titles).toContain("async/await simplifies making async calls");
+});
+
+test("property likes has a default value of zero", async () => {
+  const blogWithoutLikes = {
+    title: "async/await simplifies making async calls",
+    author: "Fulanito",
+    url: "http://sklnlskdnvlsknvsl",
+  };
+
+  const savedBlog = await api
+    .post("/api/blogs")
+    .send(blogWithoutLikes)
+    .expect(201)
+    .expect("Content-Type", /application\/json/);
+    console.log("saved blog", savedBlog);
+    
+  expect(savedBlog._body.likes).toBe(0);
 });
 
 afterAll(() => {
