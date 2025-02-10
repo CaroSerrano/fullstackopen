@@ -21,9 +21,16 @@ test("blogs are returned as json", async () => {
 });
 
 test("all blogs are returned", async () => {
-  const response = await api.get("/api/blogs");  
+  const response = await api.get("/api/blogs");
 
   expect(response.body).toHaveLength(helper.initialBlogs.length);
+});
+
+test("The name of the unique identifier is id", async () => {
+  const response = await api.get("/api/blogs");
+  const identifiers = response.body.map((r) => r.id);
+
+  expect(identifiers).toBeDefined();
 });
 
 afterAll(() => {
