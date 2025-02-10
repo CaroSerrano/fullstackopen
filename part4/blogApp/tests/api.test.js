@@ -79,6 +79,12 @@ test("title and url required", async () => {
   await api.post("/api/blogs").send(blogWithMissingParams).expect(400);
 });
 
+test("delete one blog by id successfully", async () => {
+  const blogs = Object.values(await helper.blogsInDb());
+  const randomBlog = blogs[Math.floor(Math.random()*blogs.length)];  
+  await api.del(`/api/blogs/${randomBlog.id}`).expect(204);
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });
