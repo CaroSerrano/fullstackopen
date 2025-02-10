@@ -85,6 +85,22 @@ test("delete one blog by id successfully", async () => {
   await api.del(`/api/blogs/${randomBlog.id}`).expect(204);
 });
 
+test("updates a blog correctly", async() => {
+  const blogs = Object.values(await helper.blogsInDb());
+  const randomBlog = blogs[Math.floor(Math.random()*blogs.length)];
+  const newBlog = {
+    title: randomBlog.title, 
+    author: randomBlog.author,
+    url: randomBlog.url,
+    likes: Math.floor(Math.random()*100)
+  }
+  await api
+  .put(`/api/blogs/${randomBlog.id}`)
+  .send(newBlog)
+  .expect(200)
+  .expect("Content-Type", /application\/json/)
+})
+
 afterAll(() => {
   mongoose.connection.close();
 });
