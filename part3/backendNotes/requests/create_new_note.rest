@@ -1,5 +1,6 @@
 POST http://localhost:3001/api/notes
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJvb3QiLCJpZCI6IjY3YWE0YmY1MmY3MzUxMGY5ZjkxZDQ2YyIsImlhdCI6MTczOTIzMTY5NX0.xfvSQHsXbku1_KRA3ZuMyRdB2x5KG69TX9k9sgYV2mI
 
 {
     "content": "asdakla",
