@@ -60,6 +60,50 @@ describe("when there is initially one user in db", () => {
     assert.strictEqual(usersAtEnd.length, usersAtStart.length);
   });
 
+  test("creation fails with proper statuscode and message if username length is < 3", async () => {
+    const usersAtStart = await helper.usersInDb();
+
+    const newUser = {
+      username: "ro",
+      name: "Superuser",
+      password: "salainen",
+    };
+
+    const result = await api
+      .post("/api/users")
+      .send(newUser)
+      .expect(400)
+      .expect("Content-Type", /application\/json/);
+
+    const usersAtEnd = await helper.usersInDb();
+    console.log(result.body.error);
+    
+    assert(result.body.error.includes("User validation failed"));
+
+    assert.strictEqual(usersAtEnd.length, usersAtStart.length);
+  });
+
+  test("creation fails with proper statuscode and message if password length is < 3", async () => {
+    const usersAtStart = await helper.usersInDb();
+
+    const newUser = {
+      username: "root",
+      name: "Superuser",
+      password: "12",
+    };
+
+    const result = await api
+      .post("/api/users")
+      .send(newUser)
+      .expect(400)
+      .expect("Content-Type", /application\/json/);
+
+    const usersAtEnd = await helper.usersInDb();
+    assert(result.body.error.includes("password must be at least 3 characters long"));
+
+    assert.strictEqual(usersAtEnd.length, usersAtStart.length);
+  });
+
   test("users are returned as json", async () => {
     await api
       .get("/api/users")
