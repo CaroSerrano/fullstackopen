@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Blog from "./components/Blog";
 import Notification from "./components/Notification";
 import LoginForm from "./components/LoginForm";
 import CreateBlogForm from "./components/CreateBlogForm";
+import Togglable from "./components/Togglable";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 
@@ -27,6 +28,8 @@ const App = () => {
       blogService.setToken(user.token);
     }
   }, []);
+
+  const blogFormRef = useRef()
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -79,6 +82,7 @@ const App = () => {
   const handleCreateBlog = async (event) => {
     event.preventDefault();
     try {
+      blogFormRef.current.toggleVisibility();
       const blogObject = {
         title: title,
         author: author,
@@ -131,16 +135,19 @@ const App = () => {
       <Notification message={notificationMessage} />
       <p>{user.name} logged-in</p>
       <button onClick={handleLogout}>logout</button>
-      <h3>Create new</h3>
-      <CreateBlogForm
-        title={title}
-        author={author}
-        url={url}
-        handleCreateBlog={handleCreateBlog}
-        handleTitleChange={handleTitleChange}
-        handleAuthorChange={handleAuthorChange}
-        handleUrlChange={handleUrlChange}
-      />
+      <Togglable buttonLabel="create blog" ref={blogFormRef}>
+        <h3>Create new</h3>
+        <CreateBlogForm
+          title={title}
+          author={author}
+          url={url}
+          handleCreateBlog={handleCreateBlog}
+          handleTitleChange={handleTitleChange}
+          handleAuthorChange={handleAuthorChange}
+          handleUrlChange={handleUrlChange}
+        />
+      </Togglable>
+
       <br></br>
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
