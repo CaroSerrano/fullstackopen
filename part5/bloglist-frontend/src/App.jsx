@@ -9,9 +9,6 @@ import loginService from "./services/login";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [url, setUrl] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [notificationMessage, setNotificationMessage] = useState(null);
@@ -29,7 +26,7 @@ const App = () => {
     }
   }, []);
 
-  const blogFormRef = useRef()
+  const blogFormRef = useRef();
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -67,36 +64,15 @@ const App = () => {
     setPassword(event.target.value);
   };
 
-  const handleTitleChange = (event) => {
-    setTitle(event.target.value);
-  };
-
-  const handleAuthorChange = (event) => {
-    setAuthor(event.target.value);
-  };
-
-  const handleUrlChange = (event) => {
-    setUrl(event.target.value);
-  };
-
-  const handleCreateBlog = async (event) => {
-    event.preventDefault();
+  const handleCreateBlog = async (blogObject) => {
     try {
       blogFormRef.current.toggleVisibility();
-      const blogObject = {
-        title: title,
-        author: author,
-        url: url,
-      };
-
       const returnedBlog = await blogService.create(blogObject);
 
       setBlogs(blogs.concat(returnedBlog));
-      setTitle("");
-      setAuthor("");
-      setUrl("");
+
       setNotificationMessage({
-        message: `A new blog ${title} by ${author} added`,
+        message: `A new blog added`,
         error: false,
       });
       setTimeout(() => {
@@ -137,15 +113,7 @@ const App = () => {
       <button onClick={handleLogout}>logout</button>
       <Togglable buttonLabel="create blog" ref={blogFormRef}>
         <h3>Create new</h3>
-        <CreateBlogForm
-          title={title}
-          author={author}
-          url={url}
-          handleCreateBlog={handleCreateBlog}
-          handleTitleChange={handleTitleChange}
-          handleAuthorChange={handleAuthorChange}
-          handleUrlChange={handleUrlChange}
-        />
+        <CreateBlogForm handleCreateBlog={handleCreateBlog} />
       </Togglable>
 
       <br></br>
