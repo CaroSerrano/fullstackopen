@@ -89,6 +89,17 @@ const App = () => {
     }
   };
 
+  const handleRemoveBlog = (id) => {
+    setNotificationMessage({
+      message: "Blog deleted successfully",
+      error: false,
+    });
+    setTimeout(() => {
+      setNotificationMessage(null);
+    }, 5000);
+    setBlogs(blogs.filter(blog => blog.id !== id));
+  };
+
   if (user === null) {
     return (
       <div>
@@ -120,7 +131,7 @@ const App = () => {
       {blogs
       .sort((a, b) => b.likes - a.likes)
       .map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} onRemove = {handleRemoveBlog}/>
       ))}
     </div>
   );

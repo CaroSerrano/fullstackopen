@@ -1,9 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import blogService from "../services/blogs";
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, onRemove }) => {
   const [detailsVisibility, setDetailsVisibility] = useState(false);
+  const [removeBtnVisibility, setRemoveBtnVisibility] = useState(false);
   const [likes, setLikes] = useState(blog.likes);
+
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser");
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON);
+      if (blog.user?.username === user.username) {
+        setRemoveBtnVisibility(true);
+      }
+    }
+  }, [blog.user]);
 
   const blogStyle = {
     paddingTop: 10,
@@ -34,6 +45,17 @@ const Blog = ({ blog }) => {
     }
   };
 
+  const handleRemoveBtn = async () => {
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
+      await blogService.removeBlog(blog.id);
+      onRemove(blog.id)
+    }
+  };
+
+  const removeBtnStyle = {
+    display: removeBtnVisibility ? "" : "none",
+  };
+
   const detailsStyle = {
     display: detailsVisibility ? "" : "none",
   };
@@ -49,6 +71,9 @@ const Blog = ({ blog }) => {
         </p>
         {blog.user ? blog.user.name : "User unknown"}
       </div>
+      <button style={removeBtnStyle} onClick={handleRemoveBtn}>
+        remove
+      </button>
     </div>
   );
 };
