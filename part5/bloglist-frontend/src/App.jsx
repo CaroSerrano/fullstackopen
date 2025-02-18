@@ -1,16 +1,16 @@
-import { useState, useEffect, useRef } from "react";
-import Blog from "./components/Blog";
-import Notification from "./components/Notification";
-import LoginForm from "./components/LoginForm";
-import CreateBlogForm from "./components/CreateBlogForm";
-import Togglable from "./components/Togglable";
-import blogService from "./services/blogs";
-import loginService from "./services/login";
+import { useState, useEffect, useRef } from 'react';
+import Blog from './components/Blog';
+import Notification from './components/Notification';
+import LoginForm from './components/LoginForm';
+import CreateBlogForm from './components/CreateBlogForm';
+import Togglable from './components/Togglable';
+import blogService from './services/blogs';
+import loginService from './services/login';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [notificationMessage, setNotificationMessage] = useState(null);
   const [user, setUser] = useState(null);
 
@@ -18,7 +18,7 @@ const App = () => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
   }, []);
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser");
+    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser');
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
       setUser(user);
@@ -36,13 +36,13 @@ const App = () => {
         username,
         password,
       });
-      window.localStorage.setItem("loggedBlogappUser", JSON.stringify(user));
+      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user));
       blogService.setToken(user.token);
       setUser(user);
-      setUsername("");
-      setPassword("");
+      setUsername('');
+      setPassword('');
     } catch (exception) {
-      setNotificationMessage({ message: "Wrong credentials", error: true });
+      setNotificationMessage({ message: 'Wrong credentials', error: true });
       setTimeout(() => {
         setNotificationMessage(null);
       }, 5000);
@@ -50,10 +50,10 @@ const App = () => {
   };
 
   const handleLogout = (event) => {
-    window.localStorage.removeItem("loggedBlogappUser");
+    window.localStorage.removeItem('loggedBlogappUser');
     setUser(null);
-    setUsername("");
-    setPassword("");
+    setUsername('');
+    setPassword('');
   };
 
   const handleUsernameChange = (event) => {
@@ -72,7 +72,7 @@ const App = () => {
       setBlogs(blogs.concat(returnedBlog));
 
       setNotificationMessage({
-        message: `A new blog added`,
+        message: 'A new blog added',
         error: false,
       });
       setTimeout(() => {
@@ -80,7 +80,7 @@ const App = () => {
       }, 5000);
     } catch (error) {
       setNotificationMessage({
-        message: "Creation of a new blog failed :(",
+        message: 'Creation of a new blog failed :(',
         error: true,
       });
       setTimeout(() => {
@@ -91,13 +91,13 @@ const App = () => {
 
   const handleRemoveBlog = (id) => {
     setNotificationMessage({
-      message: "Blog deleted successfully",
+      message: 'Blog deleted successfully',
       error: false,
     });
     setTimeout(() => {
       setNotificationMessage(null);
     }, 5000);
-    setBlogs(blogs.filter(blog => blog.id !== id));
+    setBlogs(blogs.filter((blog) => blog.id !== id));
   };
 
   if (user === null) {
@@ -122,17 +122,17 @@ const App = () => {
       <Notification message={notificationMessage} />
       <p>{user.name} logged-in</p>
       <button onClick={handleLogout}>logout</button>
-      <Togglable buttonLabel="create blog" ref={blogFormRef}>
+      <Togglable buttonLabel='create blog' ref={blogFormRef}>
         <h3>Create new</h3>
         <CreateBlogForm handleCreateBlog={handleCreateBlog} />
       </Togglable>
 
       <br></br>
       {blogs
-      .sort((a, b) => b.likes - a.likes)
-      .map((blog) => (
-        <Blog key={blog.id} blog={blog} onRemove = {handleRemoveBlog}/>
-      ))}
+        .sort((a, b) => b.likes - a.likes)
+        .map((blog) => (
+          <Blog key={blog.id} blog={blog} onRemove={handleRemoveBlog} />
+        ))}
     </div>
   );
 };

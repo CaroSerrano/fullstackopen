@@ -1,4 +1,5 @@
 import { useState, forwardRef, useImperativeHandle } from 'react'
+import PropTypes from 'prop-types'
 
 
 const Togglable = forwardRef((props, refs) => { {/* con forwardRef el componente puede acceder a la referencia que le fue asignada. */}
@@ -31,6 +32,9 @@ const Togglable = forwardRef((props, refs) => { {/* con forwardRef el componente
   )
 
 })
-Togglable.displayName = "Togglable";
+Togglable.displayName = 'Togglable';
+Togglable.propTypes = {
+  buttonLabel: PropTypes.string.isRequired
+}
 
 export default Togglable

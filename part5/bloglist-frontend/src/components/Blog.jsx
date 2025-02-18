@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import blogService from "../services/blogs";
+import { useState, useEffect } from 'react';
+import blogService from '../services/blogs';
 
 const Blog = ({ blog, onRemove }) => {
   const [detailsVisibility, setDetailsVisibility] = useState(false);
@@ -7,7 +7,7 @@ const Blog = ({ blog, onRemove }) => {
   const [likes, setLikes] = useState(blog.likes);
 
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser");
+    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser');
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
       if (blog.user?.username === user.username) {
@@ -19,7 +19,7 @@ const Blog = ({ blog, onRemove }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
-    border: "solid",
+    border: 'solid',
     borderWidth: 1,
     marginBottom: 5,
   };
@@ -53,11 +53,11 @@ const Blog = ({ blog, onRemove }) => {
   };
 
   const removeBtnStyle = {
-    display: removeBtnVisibility ? "" : "none",
+    display: removeBtnVisibility ? '' : 'none',
   };
 
   const detailsStyle = {
-    display: detailsVisibility ? "" : "none",
+    display: detailsVisibility ? '' : 'none',
   };
 
   return (
@@ -69,7 +69,7 @@ const Blog = ({ blog, onRemove }) => {
         <p>
           {likes} <button onClick={handleLikeBtn}>like</button>
         </p>
-        {blog.user ? blog.user.name : "User unknown"}
+        {blog.user ? blog.user.name : 'User unknown'}
       </div>
       <button style={removeBtnStyle} onClick={handleRemoveBtn}>
         remove
