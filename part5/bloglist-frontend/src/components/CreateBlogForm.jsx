@@ -26,6 +26,7 @@ const CreateBlogForm = ({ handleCreateBlog }) => {
           value={title}
           name='Title'
           onChange={(event) => setTitle(event.target.value)}
+          placeholder='type title of the blog here'
         />
       </div>
       <div>
@@ -35,6 +36,7 @@ const CreateBlogForm = ({ handleCreateBlog }) => {
           value={author}
           name='Author'
           onChange={(event) => setAuthor(event.target.value)}
+          placeholder='type author of the blog here'
         />
       </div>
       <div>
@@ -44,6 +46,7 @@ const CreateBlogForm = ({ handleCreateBlog }) => {
           value={url}
           name='Url'
           onChange={(event) => setUrl(event.target.value)}
+          placeholder='type url of the blog here'
         />
       </div>
       <button type='submit'>Create Blog</button>

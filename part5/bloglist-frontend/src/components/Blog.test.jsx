@@ -47,9 +47,7 @@ test('two clicks on botton like equals two calls to event handler', async () => 
   const mockHandler = vi.fn();
   const mockLikeHandler = vi.fn();
 
-  const { container } = render(
-    <Blog blog={blog} onRemove={mockHandler} onLike={mockLikeHandler} />
-  );
+  render(<Blog blog={blog} onRemove={mockHandler} onLike={mockLikeHandler} />);
   const user = userEvent.setup();
 
   const likeBtn = screen.getByText('like');
