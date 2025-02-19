@@ -21,28 +21,45 @@ describe('Blog app', () => {
 
   describe('Login', () => {
     test('succeeds with correct credentials', async ({ page }) => {
-      await loginWith(page, 'Root', '1234')
+      await loginWith(page, 'Root', '1234');
       await expect(page.getByText('Caro logged-in')).toBeVisible();
     });
 
     test('fails with wrong credentials', async ({ page }) => {
-        await loginWith(page, 'Root', 'wrong')
-        await expect(page.getByText('Caro logged-in')).not.toBeVisible();
+      await loginWith(page, 'Root', 'wrong');
+      await expect(page.getByText('Caro logged-in')).not.toBeVisible();
     });
   });
 
   describe('When logged in', () => {
     beforeEach(async ({ page }) => {
-      await loginWith(page, "Root", "1234")
-    })
-  
+      await loginWith(page, 'Root', '1234');
+    });
+
     test('a new blog can be created', async ({ page }) => {
       await createBlog(page, {
         title: 'first blog',
         author: 'Caro',
-        url: 'bla'
-      })
-      await expect(page.getByText('first blog')).toBeVisible()
-    })
-  })
+        url: 'bla',
+      });
+      await expect(page.getByText('first blog')).toBeVisible();
+    });
+
+    describe('and a blog exists', () => {
+      beforeEach(async ({ page }) => {
+        await createBlog(page, {
+          title: 'first blog',
+          author: 'Caro',
+          url: 'bla',
+        });
+      });
+
+      test('a blog can be updated', async ({ page }) => {
+        const blog = await page.getByTestId('blog');
+        await blog.getByRole('button', { name: 'view' }).click();
+        await blog.getByRole('button', { name: 'like' }).click();
+        await expect(blog.getByText('1')).toBeVisible();
+      });
+    });
+  });
 });

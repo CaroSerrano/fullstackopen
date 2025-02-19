@@ -62,7 +62,7 @@ const Blog = ({ blog, onRemove, onLike }) => {
   };
 
   return (
-    <div style={blogStyle} className='Blog'>
+    <div style={blogStyle} className='Blog' data-testid='blog'>
       <div id='mainData'>
         <p id='title'>
           {blog.title} <button onClick={handleViewBtn}>view</button>
