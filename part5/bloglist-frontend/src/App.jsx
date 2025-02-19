@@ -89,6 +89,10 @@ const App = () => {
     }
   };
 
+  const handleLikeClick = () => {
+    console.log('like cliked')
+  }
+
   const handleRemoveBlog = (id) => {
     setNotificationMessage({
       message: 'Blog deleted successfully',
@@ -131,7 +135,7 @@ const App = () => {
       {blogs
         .sort((a, b) => b.likes - a.likes)
         .map((blog) => (
-          <Blog key={blog.id} blog={blog} onRemove={handleRemoveBlog} />
+          <Blog key={blog.id} blog={blog} onRemove={handleRemoveBlog} onLike={handleLikeClick}/>
         ))}
     </div>
   );

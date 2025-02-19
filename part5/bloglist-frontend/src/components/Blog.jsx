@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import blogService from '../services/blogs';
 
-const Blog = ({ blog, onRemove }) => {
+const Blog = ({ blog, onRemove, onLike }) => {
   const [detailsVisibility, setDetailsVisibility] = useState(false);
   const [removeBtnVisibility, setRemoveBtnVisibility] = useState(false);
   const [likes, setLikes] = useState(blog.likes);
@@ -30,6 +30,7 @@ const Blog = ({ blog, onRemove }) => {
 
   const handleLikeBtn = async () => {
     try {
+      onLike()
       const newBlogObject = {
         title: blog.title,
         author: blog.author,
@@ -72,7 +73,7 @@ const Blog = ({ blog, onRemove }) => {
       <div style={detailsStyle} id='details'>
         <p id='url'>{blog.url}</p>
         <p id='likes'>
-          {likes} <button onClick={handleLikeBtn}>like</button>
+          {likes} <button onClick={handleLikeBtn} id='likeBtn'>like</button>
         </p>
         {blog.user ? blog.user.name : 'User unknown'}
       </div>
