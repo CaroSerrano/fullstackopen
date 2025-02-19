@@ -30,4 +30,19 @@ describe('Blog app', () => {
         await expect(page.getByText('Caro logged-in')).not.toBeVisible();
     });
   });
+
+  describe('When logged in', () => {
+    beforeEach(async ({ page }) => {
+      await loginWith(page, "Root", "1234")
+    })
+  
+    test('a new blog can be created', async ({ page }) => {
+      await createBlog(page, {
+        title: 'first blog',
+        author: 'Caro',
+        url: 'bla'
+      })
+      await expect(page.getByText('first blog')).toBeVisible()
+    })
+  })
 });

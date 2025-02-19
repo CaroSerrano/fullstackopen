@@ -7,11 +7,11 @@ const loginWith = async (page, username, password) => {
   const createBlog = async (page, content) => {
     await page.getByRole('button', { name: 'create blog' }).click();
     const textboxes = await page.getByRole('textbox').all()
+    
     await textboxes[0].fill(content.title);
     await textboxes[1].fill(content.author);
     await textboxes[2].fill(content.url);
     await page.getByRole('button', { name: 'Create Blog' }).click();
-    await page.getByText(content).waitFor()
   };
   
   export { loginWith, createBlog };
