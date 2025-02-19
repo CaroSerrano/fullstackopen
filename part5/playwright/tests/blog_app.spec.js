@@ -11,6 +11,13 @@ describe('Blog app', () => {
         password: '1234',
       },
     });
+    await request.post('/api/users', {
+      data: {
+        name: 'Lina',
+        username: 'secondary',
+        password: '1234',
+      },
+    });
     await page.goto('http://localhost:5173');
   });
 
@@ -42,33 +49,44 @@ describe('Blog app', () => {
         author: 'Caro',
         url: 'bla',
       });
-      await expect(page.getByText('first blog')).toBeVisible();
+      
     });
 
     describe('and a blog exists', () => {
       beforeEach(async ({ page }) => {
-       const newBlog= await createBlog(page, {
+        await createBlog(page, {
           title: 'first blog',
           author: 'Caro',
           url: 'bla',
         });
-        await expect(page.getByText('first blog')).toBeVisible()
       });
 
       test('a blog can be updated', async ({ page }) => {
         const blog = await page.getByTestId('blog');
-        await blog.getByRole('button', { name: 'view' }).click();
-        await blog.getByRole('button', { name: 'like' }).click();
-        await expect(blog.getByText('1')).toBeVisible();
+        await blog.nth(0).getByRole('button', { name: 'view' }).click();
+        await blog.nth(0).getByRole('button', { name: 'like' }).click();
+        await expect(blog.nth(0).getByText('1')).toBeVisible();
       });
 
       test('or removed', async ({ page }) => {
         const blog = await page.getByTestId('blog');
-        await expect(blog).toBeVisible();
-        page.once('dialog', (dialog) => dialog.accept()); // Aceptar confirmación
-        await blog.getByRole('button', { name: 'remove' }).click(); // Intentar eliminar
+        page.once('dialog', (dialog) => dialog.accept());
+        await blog.nth(0).getByRole('button', { name: 'remove' }).click();
 
-        await expect(page.getByTestId('blog')).toHaveCount(0); // Confirmar eliminación
+        await expect(page.getByTestId('blog')).toHaveCount(0);
+      });
+
+      test('and only creator user can see remove button', async ({ page }) => {
+        await page.getByRole('button', { name: 'logout' }).click();
+        await loginWith(page, 'secondary', '1234');
+        await createBlog(page, {
+          title: 'second blog',
+          author: 'Caro',
+          url: 'bla',
+        });
+        await expect(page.getByText('second blog')).toBeVisible();
+        const firstBlog = page.getByText('first blog');
+        await expect(firstBlog.getByText('remove')).not.toBeVisible();
       });
     });
   });

@@ -15,6 +15,10 @@ const Blog = ({ blog, onRemove, onLike }) => {
       if (blog.user === user.id) {
         setRemoveBtnVisibility(true);
       }
+
+      if(blog.user.id && blog.user.id === user.id){
+        setRemoveBtnVisibility(true);
+      }
     }
   }, [blog.user]);
 
