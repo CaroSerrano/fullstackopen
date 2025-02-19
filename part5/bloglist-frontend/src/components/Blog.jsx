@@ -48,7 +48,7 @@ const Blog = ({ blog, onRemove }) => {
   const handleRemoveBtn = async () => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
       await blogService.removeBlog(blog.id);
-      onRemove(blog.id)
+      onRemove(blog.id);
     }
   };
 
@@ -61,12 +61,17 @@ const Blog = ({ blog, onRemove }) => {
   };
 
   return (
-    <div style={blogStyle}>
-      {blog.title} <button onClick={handleViewBtn}>view</button>
-      <p>{blog.author} </p>
-      <div style={detailsStyle}>
-        <p>{blog.url}</p>
-        <p>
+    <div style={blogStyle} className='Blog'>
+      <div id='mainData'>
+        <p id='title'>
+          {blog.title} <button onClick={handleViewBtn}>view</button>
+        </p>
+        <p id='author'>{blog.author} </p>
+      </div>
+
+      <div style={detailsStyle} id='details'>
+        <p id='url'>{blog.url}</p>
+        <p id='likes'>
           {likes} <button onClick={handleLikeBtn}>like</button>
         </p>
         {blog.user ? blog.user.name : 'User unknown'}
