@@ -10,7 +10,9 @@ const Blog = ({ blog, onRemove, onLike }) => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser');
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
-      if (blog.user?.username === user.username) {
+      console.log('Usuario autenticado:', user);
+      console.log('Usuario del blog:', blog.user);
+      if (blog.user === user.id) {
         setRemoveBtnVisibility(true);
       }
     }

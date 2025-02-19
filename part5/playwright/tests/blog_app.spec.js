@@ -47,11 +47,12 @@ describe('Blog app', () => {
 
     describe('and a blog exists', () => {
       beforeEach(async ({ page }) => {
-        await createBlog(page, {
+       const newBlog= await createBlog(page, {
           title: 'first blog',
           author: 'Caro',
           url: 'bla',
         });
+        await expect(page.getByText('first blog')).toBeVisible()
       });
 
       test('a blog can be updated', async ({ page }) => {
@@ -59,6 +60,15 @@ describe('Blog app', () => {
         await blog.getByRole('button', { name: 'view' }).click();
         await blog.getByRole('button', { name: 'like' }).click();
         await expect(blog.getByText('1')).toBeVisible();
+      });
+
+      test('or removed', async ({ page }) => {
+        const blog = await page.getByTestId('blog');
+        await expect(blog).toBeVisible();
+        page.once('dialog', (dialog) => dialog.accept()); // Aceptar confirmación
+        await blog.getByRole('button', { name: 'remove' }).click(); // Intentar eliminar
+
+        await expect(page.getByTestId('blog')).toHaveCount(0); // Confirmar eliminación
       });
     });
   });

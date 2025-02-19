@@ -1,3 +1,5 @@
+
+
 const loginWith = async (page, username, password) => {
   await page.getByTestId('username').fill(username);
   await page.getByTestId('password').fill(password);
@@ -14,8 +16,5 @@ const createBlog = async (page, content) => {
   await page.getByRole('button', { name: 'Create Blog' }).click();
 };
 
-const updateBlog = async (page, content) => {
-    
-}
 
 export { loginWith, createBlog };
