@@ -49,7 +49,6 @@ describe('Blog app', () => {
         author: 'Caro',
         url: 'bla',
       });
-      
     });
 
     describe('and a blog exists', () => {
@@ -87,6 +86,37 @@ describe('Blog app', () => {
         await expect(page.getByText('second blog')).toBeVisible();
         const firstBlog = page.getByText('first blog');
         await expect(firstBlog.getByText('remove')).not.toBeVisible();
+      });
+    });
+
+    describe('and several blogs exists', () => {
+      beforeEach(async ({ page }) => {
+        await createBlog(page, {
+          title: 'first blog',
+          author: 'Caro',
+          url: 'bla',
+        });
+        await createBlog(page, {
+          title: 'second blog',
+          author: 'Caro',
+          url: 'bla',
+        });
+        await createBlog(page, {
+          title: 'third blog',
+          author: 'Caro',
+          url: 'bla',
+        });
+      });
+
+      test('they are sorted by number of likes', async ({ page }) => {
+        const thirdBlog = await page
+          .getByTestId('blog')
+          .filter({ hasText: 'third blog' });
+        await thirdBlog.getByRole('button', { name: 'view' }).click();
+        await thirdBlog.getByRole('button', { name: 'like' }).click();
+        await expect(page.getByTestId('blog').nth(0)).toContainText(
+          'third blog'
+        );
       });
     });
   });

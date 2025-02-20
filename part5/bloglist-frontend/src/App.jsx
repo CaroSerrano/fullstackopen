@@ -89,8 +89,9 @@ const App = () => {
     }
   };
 
-  const handleLikeClick = () => {
+  const handleLikeClick = (blog) => {
     console.log('like cliked')
+    setBlogs(blogs.filter((b) => b.id !== blog.id).concat(blog))
   }
 
   const handleRemoveBlog = (id) => {

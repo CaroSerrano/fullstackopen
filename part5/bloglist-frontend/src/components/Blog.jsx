@@ -10,8 +10,6 @@ const Blog = ({ blog, onRemove, onLike }) => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser');
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
-      console.log('Usuario autenticado:', user);
-      console.log('Usuario del blog:', blog.user);
       if (blog.user === user.id) {
         setRemoveBtnVisibility(true);
       }
@@ -36,7 +34,6 @@ const Blog = ({ blog, onRemove, onLike }) => {
 
   const handleLikeBtn = async () => {
     try {
-      onLike()
       const newBlogObject = {
         title: blog.title,
         author: blog.author,
@@ -44,9 +41,9 @@ const Blog = ({ blog, onRemove, onLike }) => {
         likes: likes + 1,
         user: blog.user.id,
       };
-
       const returnedBlog = await blogService.update(blog.id, newBlogObject);
       setLikes(returnedBlog.likes);
+      onLike(returnedBlog)
     } catch (error) {
       console.log(error);
     }
@@ -78,7 +75,7 @@ const Blog = ({ blog, onRemove, onLike }) => {
 
       <div style={detailsStyle} id='details'>
         <p id='url'>{blog.url}</p>
-        <p id='likes'>
+        <p id='likes' data-testid= 'likes'>
           {likes} <button onClick={handleLikeBtn} id='likeBtn'>like</button>
         </p>
         {blog.user ? blog.user.name : 'User unknown'}
