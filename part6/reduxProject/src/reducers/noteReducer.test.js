@@ -5,12 +5,8 @@ describe('noteReducer', () => {
   test('returns new state with action NEW_NOTE', () => {
     const state = [];
     const action = {
-      type: 'NEW_NOTE',
-      payload: {
-        content: 'the app state is in redux store',
-        important: true,
-        id: 1,
-      },
+      type: 'notes/createNote',
+      payload: 'the app state is in redux store',
     };
 
     deepFreeze(state); //El comando deepFreeze(state) asegura que el reducer no cambie el estado del store que se le dio como parámetro. Si el reducer usa el comando push para manipular el estado, la prueba no pasará
@@ -35,7 +31,7 @@ describe('noteReducer', () => {
     ];
 
     const action = {
-      type: 'TOGGLE_IMPORTANCE',
+      type: 'notes/toggleImportanceOf',
       payload: {
         id: 2,
       },
