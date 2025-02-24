@@ -12,6 +12,15 @@ const AnecdoteForm = () => {
       const anecdotes = queryClient.getQueryData(['anecdotes']);
       queryClient.setQueryData(['anecdotes'], anecdotes.concat(newAnecdote));
     },
+    onError: (error) => {
+      notificationDispatch({
+        type: 'SET',
+        payload: `Too short anecdote. Must have length 5 or more`,
+      });
+      setTimeout(() => {
+        notificationDispatch({ type: 'REMOVE' });
+      }, 5000);
+    },
   });
   const onCreate = (event) => {
     event.preventDefault();
