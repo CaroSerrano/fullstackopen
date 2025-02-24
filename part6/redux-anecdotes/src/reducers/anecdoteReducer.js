@@ -5,17 +5,14 @@ const anecdoteSlice = createSlice({
   name: 'anecdotes',
   initialState: [],
   reducers: {
-    vote(state, action) {
-      const id = action.payload;
-      const anecdoteToChange = state.find((a) => a.id === id);
-      const changedAnecdote = {
-        ...anecdoteToChange,
-        votes: anecdoteToChange.votes + 1,
-      };
-      return state.map((a) => (a.id !== id ? a : changedAnecdote));
-    },
     appendAnecdote(state, action) {
       state.push(action.payload);
+    },
+    updateVotes(state, action) {
+      console.log(action.payload);
+      const { id, returnedAnecdote } = action.payload;
+
+      return state.map((a) => (a.id !== id ? a : returnedAnecdote));
     },
     setAcnedotes(state, action) {
       return action.payload;
@@ -23,7 +20,10 @@ const anecdoteSlice = createSlice({
   },
 });
 
-export const { vote, setAcnedotes, appendAnecdote } = anecdoteSlice.actions;
+export const { setAcnedotes, appendAnecdote, updateVotes } =
+  anecdoteSlice.actions;
+
+/**************** Action creators (Redux Thunk) Funciones de comunicación con el servidor ****************/
 
 export const inicializeAnecdotes = () => {
   return async (dispatch) => {
@@ -36,6 +36,13 @@ export const createAnecdote = (content) => {
   return async (dispatch) => {
     const newAnecdote = await anecdoteService.createNew(content);
     dispatch(appendAnecdote(newAnecdote));
+  };
+};
+
+export const updateAnecdote = (id, content) => {
+  return async (dispatch) => {
+    const returnedAnecdote = await anecdoteService.update(id, content);
+    dispatch(updateVotes({ id, returnedAnecdote }));
   };
 };
 export default anecdoteSlice.reducer;
