@@ -1,17 +1,32 @@
 import { useState } from 'react';
+import { createBlog } from '../blogs/blogSlice';
+import { useDispatch } from 'react-redux';
+import { setNotification } from '../notification/notificationSlice';
 
-const CreateBlogForm = ({ handleCreateBlog }) => {
+const CreateBlogForm = () => {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [url, setUrl] = useState('');
+  const dispatch = useDispatch();
 
   const addBlog = (event) => {
     event.preventDefault();
-    handleCreateBlog({
-      title: title,
-      author: author,
-      url: url,
-    });
+    dispatch(
+      createBlog({
+        title: title,
+        author: author,
+        url: url,
+      })
+    );
+    dispatch(
+      setNotification(
+        {
+          message: 'A new blog added',
+          error: false,
+        },
+        5
+      )
+    );
     setTitle('');
     setAuthor('');
     setUrl('');

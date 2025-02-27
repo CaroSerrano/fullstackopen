@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { setNotification } from '../reducers/notificationReducer';
-import loginService from '../services/login'
-import blogService from '../services/blogs'
+import { setNotification } from '../notification/notificationSlice';
+import loginService from '../../services/login'
+import blogService from '../../services/blogs'
 
 const LoginForm = (props) => {
   const dispatch = useDispatch();

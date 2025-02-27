@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
-import blogService from '../services/blogs';
+import { setNotification } from '../notification/notificationSlice';
+import { updateBlog, deleteBlog } from './blogSlice';
+import { useDispatch } from 'react-redux';
 
-const Blog = ({ blog, onRemove, onLike }) => {
+const Blog = ({ blog }) => {
   const [detailsVisibility, setDetailsVisibility] = useState(false);
   const [removeBtnVisibility, setRemoveBtnVisibility] = useState(false);
   const [likes, setLikes] = useState(blog.likes);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser');
@@ -14,7 +17,7 @@ const Blog = ({ blog, onRemove, onLike }) => {
         setRemoveBtnVisibility(true);
       }
 
-      if(blog.user.id && blog.user.id === user.id){
+      if (blog.user.id && blog.user.id === user.id) {
         setRemoveBtnVisibility(true);
       }
     }
@@ -34,25 +37,40 @@ const Blog = ({ blog, onRemove, onLike }) => {
 
   const handleLikeBtn = async () => {
     try {
-      const newBlogObject = {
-        title: blog.title,
-        author: blog.author,
-        url: blog.url,
-        likes: likes + 1,
-        user: blog.user.id,
-      };
-      const returnedBlog = await blogService.update(blog.id, newBlogObject);
-      setLikes(returnedBlog.likes);
-      onLike(returnedBlog)
+      dispatch(
+        updateBlog(blog.id, {
+          ...blog,
+          likes: blog.likes + 1,
+          user: blog.user.id,
+        })
+      );
+      setLikes(blog.likes + 1);
     } catch (error) {
       console.log(error);
+      dispatch(
+        setNotification(
+          {
+            message: 'Error updating blog',
+            error: true,
+          },
+          5
+        )
+      );
     }
   };
 
   const handleRemoveBtn = async () => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
-      await blogService.removeBlog(blog.id);
-      onRemove(blog.id);
+      dispatch(deleteBlog(blog.id));
+      dispatch(
+        setNotification(
+          {
+            message: 'Blog deleted successfully',
+            error: false,
+          },
+          5
+        )
+      );
     }
   };
 
@@ -75,8 +93,11 @@ const Blog = ({ blog, onRemove, onLike }) => {
 
       <div style={detailsStyle} id='details'>
         <p id='url'>{blog.url}</p>
-        <p id='likes' data-testid= 'likes'>
-          {likes} <button onClick={handleLikeBtn} id='likeBtn'>like</button>
+        <p id='likes' data-testid='likes'>
+          {likes}{' '}
+          <button onClick={handleLikeBtn} id='likeBtn'>
+            like
+          </button>
         </p>
         {blog.user ? blog.user.name : 'User unknown'}
       </div>
