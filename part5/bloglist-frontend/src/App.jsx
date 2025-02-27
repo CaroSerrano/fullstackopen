@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { inicializeBlogs } from './features/blogs/blogSlice';
+import { removeUser, setUser } from './features/login/loggedUserSlice';
 import Blog from './features/blogs/Blog';
 import Notification from './features/notification/Notification';
 import LoginForm from './features/login/LoginForm';
@@ -10,7 +11,7 @@ import blogService from './services/blogs';
 
 const App = () => {
   const blogs = useSelector(({ blogs }) => blogs);
-  const [user, setUser] = useState(null);
+  const user = useSelector((state) => state.loggedUser);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -29,7 +30,7 @@ const App = () => {
 
   const handleLogout = (event) => {
     window.localStorage.removeItem('loggedBlogappUser');
-    setUser(null);
+    dispatch(removeUser());
   };
 
   if (user === null) {
@@ -37,7 +38,7 @@ const App = () => {
       <div>
         <h2>Log in to application</h2>
         <Notification />
-        <LoginForm setUser={setUser} />
+        <LoginForm />
       </div>
     );
   }

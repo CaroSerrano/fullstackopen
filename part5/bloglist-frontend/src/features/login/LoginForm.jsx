@@ -1,11 +1,11 @@
-import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { setNotification } from '../notification/notificationSlice';
-import loginService from '../../services/login'
-import blogService from '../../services/blogs'
+import { setUser } from './loggedUserSlice';
+import loginService from '../../services/login';
+import blogService from '../../services/blogs';
 
-const LoginForm = (props) => {
+const LoginForm = () => {
   const dispatch = useDispatch();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -28,7 +28,7 @@ const LoginForm = (props) => {
       });
       window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user));
       blogService.setToken(user.token);
-      props.setUser(user);
+      dispatch(setUser(user));
     } catch (exception) {
       dispatch(
         setNotification({ message: 'Wrong credentials', error: true }, 5)
@@ -61,7 +61,5 @@ const LoginForm = (props) => {
     </form>
   );
 };
-LoginForm.propTypes = {
-  setUser: PropTypes.func.isRequired,
-};
+
 export default LoginForm;
