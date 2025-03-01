@@ -1,85 +1,123 @@
 /* eslint-disable no-unused-vars */
-import { useState, useEffect, createRef } from 'react'
+import { useState, useEffect, createRef } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
-import blogService from './services/blogs'
-import loginService from './services/login'
-import storage from './services/storage'
-import Login from './components/Login'
-import Blog from './components/Blog'
-import NewBlog from './components/NewBlog'
-import Notification from './components/Notification'
-import Togglable from './components/Togglable'
+import blogService from './services/blogs';
+import loginService from './services/login';
+import storage from './services/storage';
+import Login from './components/Login';
+import Blog from './components/Blog';
+import NewBlog from './components/NewBlog';
+import Notification from './components/Notification';
+import Togglable from './components/Togglable';
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
-  const [user, setUser] = useState(null)
-  const [notification, setNotification] = useState(null)
+  const [user, setUser] = useState(null);
+  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs(blogs)
-    )
-  }, [])
-
-  useEffect(() => {
-    const user = storage.loadUser()
+    const user = storage.loadUser();
     if (user) {
-      setUser(user)
+      setUser(user);
     }
-  }, [])
+  }, []);
+  const queryClient = useQueryClient();
 
-  const blogFormRef = createRef()
+  const result = useQuery({
+    queryKey: ['blogs'],
+    queryFn: blogService.getAll,
+  });
+
+  const newBlogMutation = useMutation({
+    mutationFn: blogService.create,
+    onSuccess: (newObject) => {
+      const blogs = queryClient.getQueryData(['blogs']);
+      queryClient.setQueryData(['blogs'], blogs.concat(newObject));
+    },
+  });
+  const updateBlogMutation = useMutation({
+    mutationFn: ({ id, data }) => blogService.update(id, data),
+    onSuccess: (newObject) => {
+      const blogs = queryClient.getQueryData(['blogs']);
+      queryClient.setQueryData(
+        ['blogs'],
+        blogs.map((b) =>
+          b.id.toString() !== newObject.id.toString() ? b : newObject
+        )
+      );
+    },
+    onError: (error) => {
+      console.error('Error updating blog:', error);
+    },
+  });
+
+  const deleteBlogMutation = useMutation({
+    mutationFn: (id) => blogService.remove(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] });
+    },
+    onError: (error) => {
+      console.error('Error deleting blog:', error);
+    },
+  });
+  // console.log(JSON.parse(JSON.stringify(result)));
+
+  if (result.isLoading) {
+    return <div>loading data...</div>;
+  }
+
+  const blogs = result.data;
+
+  const blogFormRef = createRef();
 
   const notify = (message, type = 'success') => {
-    setNotification({ message, type })
+    setNotification({ message, type });
     setTimeout(() => {
-      setNotification(null)
-    }, 5000)
-  }
+      setNotification(null);
+    }, 5000);
+  };
 
   const handleLogin = async (credentials) => {
     try {
-      const user = await loginService.login(credentials)
-      setUser(user)
-      storage.saveUser(user)
-      notify(`Welcome back, ${user.name}`)
+      const user = await loginService.login(credentials);
+      setUser(user);
+      storage.saveUser(user);
+      notify(`Welcome back, ${user.name}`);
     } catch (error) {
-      notify('Wrong credentials', 'error')
+      notify('Wrong credentials', 'error');
     }
-  }
+  };
 
   const handleCreate = async (blog) => {
-    const newBlog = await blogService.create(blog)
-    setBlogs(blogs.concat(newBlog))
-    notify(`Blog created: ${newBlog.title}, ${newBlog.author}`)
-    blogFormRef.current.toggleVisibility()
-  }
+    newBlogMutation.mutate(blog);
+    notify(`Blog created: ${blog.title}, ${blog.author}`);
+    blogFormRef.current.toggleVisibility();
+  };
 
   const handleVote = async (blog) => {
-    console.log('updating', blog)
-    const updatedBlog = await blogService.update(blog.id, {
+    console.log('updating', blog);
+    const updatedBlog = {
       ...blog,
       likes: blog.likes + 1,
-      user: blog.user.id
-    })
+      user: blog.user.id,
+    };
 
-    notify(`You liked ${updatedBlog.title} by ${updatedBlog.author}`)
-    setBlogs(blogs.map(b => b.id === blog.id ? updatedBlog : b))
-  }
+    updateBlogMutation.mutate({ id: blog.id.toString(), data: updatedBlog });
+    notify(`You liked ${blog.title} by ${blog.author}`);
+  };
 
   const handleLogout = () => {
-    setUser(null)
-    storage.removeUser()
-    notify(`Bye, ${user.name}!`)
-  }
+    setUser(null);
+    storage.removeUser();
+    notify(`Bye, ${user.name}!`);
+  };
 
   const handleDelete = async (blog) => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-      await blogService.remove(blog.id)
-      setBlogs(blogs.filter(b => b.id !== blog.id))
-      notify(`Blog ${blog.title}, by ${blog.author} removed`)
+      deleteBlogMutation.mutate(blog.id);
+      notify(`Blog ${blog.title}, by ${blog.author} removed`);
     }
-  }
+  };
 
   if (!user) {
     return (
@@ -88,10 +126,10 @@ const App = () => {
         <Notification notification={notification} />
         <Login doLogin={handleLogin} />
       </div>
-    )
+    );
   }
 
-  const byLikes = (a, b) => b.likes - a.likes
+  const byLikes = (a, b) => b.likes - a.likes;
 
   return (
     <div>
@@ -99,23 +137,21 @@ const App = () => {
       <Notification notification={notification} />
       <div>
         {user.name} logged in
-        <button onClick={handleLogout}>
-          logout
-        </button>
+        <button onClick={handleLogout}>logout</button>
       </div>
-      <Togglable buttonLabel="create new blog" ref={blogFormRef}>
+      <Togglable buttonLabel='create new blog' ref={blogFormRef}>
         <NewBlog doCreate={handleCreate} />
       </Togglable>
-      {blogs.sort(byLikes).map(blog =>
+      {blogs.sort(byLikes).map((blog) => (
         <Blog
           key={blog.id}
           blog={blog}
           handleVote={handleVote}
           handleDelete={handleDelete}
         />
-      )}
+      ))}
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App;
