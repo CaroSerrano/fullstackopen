@@ -5,7 +5,7 @@ const saveUser = (user) => {
 };
 
 const loadUser = () => {
-  const user = localStorage.getItem(KEY);
+  const user = localStorage.getItem(KEY);  
   return user ? JSON.parse(user) : null;
 };
 
