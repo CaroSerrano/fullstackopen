@@ -38,17 +38,19 @@ blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
 });
 
 blogsRouter.post('/:id/comments', async (request, response) => {
-  const body = request.body;
+  const { content } = request.body;
   const blog = await Blog.findById(request.params.id);
-  if (body.comments) {
-    blog.comments.push(body.comments)
-    await blog.save()
+  if (!blog) {
+    return response.status(404).json({ error: 'Blog not found' });
+  }
+  if (content) {
+    blog.comments.push({ content });
+    await blog.save();
     response.status(201).json(blog);
   } else {
-    response.status(400).send('Please provide body.comments');
+    response.status(400).send('Please provide comment content');
   }
 });
-
 
 blogsRouter.delete(
   '/:id',

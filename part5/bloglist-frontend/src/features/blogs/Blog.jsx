@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { setNotification } from '../notification/notificationSlice';
-import { updateBlog, deleteBlog } from './blogSlice';
+import { updateBlog, deleteBlog, addComment } from './blogSlice';
 import { useDispatch } from 'react-redux';
 
 const Blog = ({ blog }) => {
   const [removeBtnVisibility, setRemoveBtnVisibility] = useState(false);
   const [likes, setLikes] = useState(blog.likes);
+  const [comment, setComment] = useState('');
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -66,10 +67,24 @@ const Blog = ({ blog }) => {
       );
     }
   };
+  const handleCommentChange = (event) => {
+    setComment(event.target.value);
+  };
+  const handleCommentBtn = () => {
+    setComment('');
+    const newComment = {
+      content: comment,
+    };
+    dispatch(addComment(blog.id, newComment));
+  };
 
   const removeBtnStyle = {
     display: removeBtnVisibility ? '' : 'none',
   };
+
+  if (!blog) {
+    return null;
+  }
 
   return (
     <div style={blogStyle} className='Blog' data-testid='blog'>
@@ -87,12 +102,22 @@ const Blog = ({ blog }) => {
           </button>
         </p>
         Added by: {blog.user ? blog.user.name : 'User unknown'}
+        <br />
+        <input
+          value={comment}
+          type='text'
+          id='comment'
+          onChange={handleCommentChange}
+        />
+        <button style={{ margin: 5 }} onClick={handleCommentBtn}>
+          add comment
+        </button>
         {blog.comments.length > 0 && (
           <>
             <h4>Comments</h4>
             <ul>
               {blog.comments.map((c) => (
-                <li key={Math.floor(Math.random() * 1000)}>{c}</li>
+                <li key={c.id}>{c.content}</li>
               ))}
             </ul>
           </>

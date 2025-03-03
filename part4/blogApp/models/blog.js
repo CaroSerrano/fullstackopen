@@ -1,4 +1,8 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
+
+const commentSchema = new mongoose.Schema({
+  content: String,
+});
 
 const blogSchema = new mongoose.Schema({
   title: String,
@@ -7,12 +11,12 @@ const blogSchema = new mongoose.Schema({
   likes: Number,
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    ref: 'User',
   },
-  comments: [String]
+  comments: [commentSchema],
 });
 
-blogSchema.set("toJSON", {
+blogSchema.set('toJSON', {
   transform: (document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString();
     delete returnedObject._id;
@@ -20,4 +24,12 @@ blogSchema.set("toJSON", {
   },
 });
 
-module.exports = mongoose.model("Blog", blogSchema);
+commentSchema.set('toJSON', {
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString();
+    delete returnedObject._id;
+    delete returnedObject._v;
+  },
+});
+
+module.exports = mongoose.model('Blog', blogSchema);
