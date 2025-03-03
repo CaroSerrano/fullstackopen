@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { createBlog } from '../blogs/blogSlice';
 import { useDispatch } from 'react-redux';
 import { setNotification } from '../notification/notificationSlice';
+import { useNavigate } from 'react-router-dom';
 
 const CreateBlogForm = () => {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [url, setUrl] = useState('');
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const addBlog = (event) => {
     event.preventDefault();
@@ -30,6 +32,7 @@ const CreateBlogForm = () => {
     setTitle('');
     setAuthor('');
     setUrl('');
+    navigate('/');
   };
 
   return (

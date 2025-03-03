@@ -1,39 +1,53 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { inicializeBlogs } from './features/blogs/blogSlice';
+import { inicializeUsers } from './features/users/usersSlice';
 import { removeUser, setUser } from './features/login/loggedUserSlice';
+import { Routes, Route, Link, useMatch } from 'react-router-dom';
+import Blogs from './features/blogs/Blogs';
 import Blog from './features/blogs/Blog';
 import Notification from './features/notification/Notification';
 import LoginForm from './features/login/LoginForm';
 import CreateBlogForm from './features/createBlogForm/CreateBlogForm';
-import Togglable from './features/togglable/Togglable';
+import Users from './features/users/Users';
+import User from './features/users/User';
 import blogService from './services/blogs';
 
 const App = () => {
-  const blogs = useSelector(({ blogs }) => blogs);
-  const user = useSelector((state) => state.loggedUser);
+  const userlogged = useSelector((state) => state.loggedUser);
   const dispatch = useDispatch();
+  const blogs = useSelector((state) => state.blogs);
+  const users = useSelector((state) => state.users);
+
+  const match = useMatch('/blogs/:id');
+  const blog = match ? blogs.find((blog) => blog.id === match.params.id) : null;
+
+  const matchUser = useMatch('/users/:id');
+  const user = matchUser
+    ? users.find((user) => user.id === matchUser.params.id)
+    : null;
 
   useEffect(() => {
     dispatch(inicializeBlogs());
   }, []);
   useEffect(() => {
+    dispatch(inicializeUsers());
+  }, []);
+  useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser');
     if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON);
-      setUser(user);
-      blogService.setToken(user.token);
+      const userlogged = JSON.parse(loggedUserJSON);
+      dispatch(setUser(userlogged));
+      blogService.setToken(userlogged.token);
     }
   }, []);
-
-  const blogFormRef = useRef();
 
   const handleLogout = (event) => {
     window.localStorage.removeItem('loggedBlogappUser');
     dispatch(removeUser());
   };
 
-  if (user === null) {
+  if (userlogged === null) {
     return (
       <div>
         <h2>Log in to application</h2>
@@ -42,24 +56,32 @@ const App = () => {
       </div>
     );
   }
-
+  const margin = {
+    margin: 5,
+  };
   return (
     <div>
-      <h2>Blogs</h2>
+      <div>
+        <Link style={margin} to='/users'>
+          users
+        </Link>
+        <Link style={margin} to='/'>
+          blogs
+        </Link>
+        {userlogged.name} logged-in
+        <button style={margin} onClick={handleLogout}>
+          logout
+        </button>
+      </div>
       <Notification />
-      <p>{user.name} logged-in</p>
-      <button onClick={handleLogout}>logout</button>
-      <Togglable buttonLabel='create blog' ref={blogFormRef}>
-        <h3>Create new</h3>
-        <CreateBlogForm />
-      </Togglable>
-
-      <br></br>
-      {[...blogs]
-        .sort((a, b) => b.likes - a.likes)
-        .map((blog) => (
-          <Blog key={blog.id} blog={blog} />
-        ))}
+      <Routes>
+        <Route path='/login' element={<LoginForm />} />
+        <Route path='/' element={<Blogs />} />
+        <Route path='/create-blog' element={<CreateBlogForm />} />
+        <Route path='/blogs/:id' element={<Blog blog={blog} />} />
+        <Route path='/users' element={<Users />} />
+        <Route path='/users/:id' element={<User user={user} />} />
+      </Routes>
     </div>
   );
 };

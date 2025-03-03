@@ -4,9 +4,11 @@ import { setNotification } from '../notification/notificationSlice';
 import { setUser } from './loggedUserSlice';
 import loginService from '../../services/login';
 import blogService from '../../services/blogs';
+import { useNavigate } from 'react-router-dom';
 
 const LoginForm = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
@@ -29,6 +31,7 @@ const LoginForm = () => {
       window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user));
       blogService.setToken(user.token);
       dispatch(setUser(user));
+      navigate('/');
     } catch (exception) {
       dispatch(
         setNotification({ message: 'Wrong credentials', error: true }, 5)
