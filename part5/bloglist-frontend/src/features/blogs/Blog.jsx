@@ -87,6 +87,16 @@ const Blog = ({ blog }) => {
           </button>
         </p>
         Added by: {blog.user ? blog.user.name : 'User unknown'}
+        {blog.comments.length > 0 && (
+          <>
+            <h4>Comments</h4>
+            <ul>
+              {blog.comments.map((c) => (
+                <li key={Math.floor(Math.random() * 1000)}>{c}</li>
+              ))}
+            </ul>
+          </>
+        )}
       </div>
       <button style={removeBtnStyle} onClick={handleRemoveBtn}>
         remove

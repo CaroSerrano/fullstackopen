@@ -25,6 +25,7 @@ blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
       author: body.author,
       url: body.url,
       likes: body.likes || 0,
+      comments: body.comments || [],
       user: user.id,
     });
     const savedBlog = await blog.save();
@@ -35,6 +36,19 @@ blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
     response.status(400).end();
   }
 });
+
+blogsRouter.post('/:id/comments', async (request, response) => {
+  const body = request.body;
+  const blog = await Blog.findById(request.params.id);
+  if (body.comments) {
+    blog.comments.push(body.comments)
+    await blog.save()
+    response.status(201).json(blog);
+  } else {
+    response.status(400).send('Please provide body.comments');
+  }
+});
+
 
 blogsRouter.delete(
   '/:id',
@@ -65,6 +79,7 @@ blogsRouter.put('/:id', async (request, response) => {
     author: body.author,
     url: body.url,
     likes: body.likes,
+    comments: body.comments,
     user: body.user,
   };
 
