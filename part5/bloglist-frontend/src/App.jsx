@@ -62,7 +62,7 @@ const App = () => {
   };
   return (
     <div className='container'>
-      <Navbar collapseOnSelect expand='lg' bg='light' data-bs-theme='light'>
+      <Navbar collapseOnSelect expand='sm' bg='light' data-bs-theme='light'>
         <Container>
           <Navbar.Brand>BlogApp</Navbar.Brand>
           <Navbar.Toggle aria-controls='responsive-navbar-nav' />
