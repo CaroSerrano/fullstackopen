@@ -5,6 +5,7 @@ import { setUser } from './loggedUserSlice';
 import loginService from '../../services/login';
 import blogService from '../../services/blogs';
 import { useNavigate } from 'react-router-dom';
+import { Form, Button } from 'react-bootstrap';
 
 const LoginForm = () => {
   const dispatch = useDispatch();
@@ -39,29 +40,29 @@ const LoginForm = () => {
     }
   };
   return (
-    <form onSubmit={handleLogin}>
-      <div>
-        Username
-        <input
+    <Form onSubmit={handleLogin}>
+      <Form.Group>
+        <Form.Label>Username</Form.Label>
+        <Form.Control
           type='text'
           value={username}
           name='Username'
           onChange={handleUsernameChange}
           data-testid='username'
         />
-      </div>
-      <div>
-        Password
-        <input
+      </Form.Group>
+      <Form.Group>
+        <Form.Label>Password</Form.Label>
+        <Form.Control
           type='password'
           value={password}
           name='Password'
           onChange={handlePasswordChange}
           data-testid='password'
         />
-      </div>
-      <button type='submit'>Login</button>
-    </form>
+      </Form.Group>
+      <Button style={{ marginTop: 10 }} variant='primary' type='submit'>Login</Button>
+    </Form>
   );
 };
 

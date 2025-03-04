@@ -4,6 +4,7 @@ import { inicializeBlogs } from './features/blogs/blogSlice';
 import { inicializeUsers } from './features/users/usersSlice';
 import { removeUser, setUser } from './features/login/loggedUserSlice';
 import { Routes, Route, Link, useMatch } from 'react-router-dom';
+import { Button, Navbar, Nav, Container } from 'react-bootstrap';
 import Blogs from './features/blogs/Blogs';
 import Blog from './features/blogs/Blog';
 import Notification from './features/notification/Notification';
@@ -49,7 +50,7 @@ const App = () => {
 
   if (userlogged === null) {
     return (
-      <div>
+      <div className='container'>
         <h2>Log in to application</h2>
         <Notification />
         <LoginForm />
@@ -60,19 +61,36 @@ const App = () => {
     margin: 5,
   };
   return (
-    <div>
-      <div>
-        <Link style={margin} to='/users'>
-          users
-        </Link>
-        <Link style={margin} to='/'>
-          blogs
-        </Link>
-        {userlogged.name} logged-in
-        <button style={margin} onClick={handleLogout}>
-          logout
-        </button>
-      </div>
+    <div className='container'>
+      <Navbar collapseOnSelect expand='lg' bg='light' data-bs-theme='light'>
+        <Container>
+          <Navbar.Brand>BlogApp</Navbar.Brand>
+          <Navbar.Toggle aria-controls='responsive-navbar-nav' />
+          <Navbar.Collapse id='responsive-navbar-nav'>
+            <Nav>
+              <Nav.Link>
+                <Link style={margin} to='/users'>
+                  users
+                </Link>
+              </Nav.Link>
+              <Nav.Link>
+                <Link style={margin} to='/'>
+                  blogs
+                </Link>
+              </Nav.Link>
+              <Navbar.Text>{userlogged.name} logged-in</Navbar.Text>
+              <Button
+                size='sm'
+                variant='outline-secondary'
+                style={margin}
+                onClick={handleLogout}
+              >
+                Logout
+              </Button>
+            </Nav>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
       <Notification />
       <Routes>
         <Route path='/login' element={<LoginForm />} />

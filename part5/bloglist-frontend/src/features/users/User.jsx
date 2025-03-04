@@ -1,3 +1,5 @@
+import { ListGroup } from 'react-bootstrap';
+
 const User = ({ user }) => {
   if (!user) {
     return null;
@@ -5,12 +7,14 @@ const User = ({ user }) => {
   return (
     <div>
       <h2>{user.name}</h2>
-      <p>added blogs</p>
-      <ul>
+      <p>Added blogs:</p>
+      <ListGroup numbered>
         {user.blogs.map((b) => (
-          <li key={b.id}>{b.title}</li>
+          <ListGroup.Item variant='secondary' key={b.id}>
+            {b.title}
+          </ListGroup.Item>
         ))}
-      </ul>
+      </ListGroup>
     </div>
   );
 };
