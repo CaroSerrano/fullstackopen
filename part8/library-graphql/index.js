@@ -1,5 +1,6 @@
 const { ApolloServer } = require('@apollo/server');
 const { startStandaloneServer } = require('@apollo/server/standalone');
+const { gql } = require('graphql-tag');
 
 let authors = [
   {
@@ -97,18 +98,26 @@ let books = [
   you can remove the placeholder query once your first one has been implemented 
 */
 
-const typeDefs = `
-type Book {
- title: String
- published: Int
- author: String
- id: ID
- genres: [String]
-}
+const typeDefs = gql`
+  type Book {
+    title: String
+    published: Int
+    author: String
+    id: ID
+    genres: [String]
+  }
+
+  type Author {
+    name: String!
+    id: ID!
+    born: Int
+    bookCount: Int!
+  }
   type Query {
     bookCount: Int!
     authorCount: Int!
     allBooks: [Book!]!
+    allAuthors: [Author!]!
   }
 `;
 
@@ -116,7 +125,12 @@ const resolvers = {
   Query: {
     bookCount: () => books.length,
     authorCount: () => authors.length,
-    allBooks: () => books
+    allBooks: () => books,
+    allAuthors: () => authors,
+  },
+  Author: {
+    bookCount: (author) =>
+      books.filter((book) => book.author === author.name).length,
   },
 };
 
