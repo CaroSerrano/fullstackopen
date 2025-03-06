@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { UPDATE_AUTHOR, GET_AUTHORS } from '../queries';
-import { useMutation } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
+import Select from 'react-select'
 
 const UpdateAuthorForm = () => {
   const [name, setName] = useState('');
+  const {data} = useQuery(GET_AUTHORS)
   const [born, setBorn] = useState('');
   const [updateAuthor, result] = useMutation(UPDATE_AUTHOR, {
     refetchQueries: [
@@ -13,7 +15,8 @@ const UpdateAuthorForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    updateAuthor({variables: {name, born: parseInt(born)}})
+    
+    updateAuthor({variables: {name: name.value, born: parseInt(born)}})
   };
 
   useEffect(() => {
@@ -21,17 +24,19 @@ const UpdateAuthorForm = () => {
       console.error('author not found');
     }
   }, [result.data]); // eslint-disable-line 
+
+  const selectOptions = data.allAuthors.map((a) =>  {return {value: a.name, label: a.name}})
   
+
   return (
     <div>
       <h3>Set birthyear</h3>
       <form onSubmit={handleSubmit}>
         <div>
           name
-          <input
-            type='text'
-            value={name}
-            onChange={({ target }) => setName(target.value)}
+          <Select
+            options={selectOptions}
+            onChange={(value) => setName(value)}
           />
         </div>
         <div>
