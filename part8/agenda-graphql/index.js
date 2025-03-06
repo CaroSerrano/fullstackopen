@@ -116,6 +116,7 @@ const resolvers = {
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  status400ForVariableCoercionErrors: true,
 });
 
 startStandaloneServer(server, {
