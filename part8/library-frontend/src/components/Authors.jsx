@@ -1,5 +1,6 @@
 import { GET_AUTHORS } from '../queries';
 import { useQuery } from '@apollo/client';
+import UpdateAuthorForm from './updateAuthorForm';
 
 const Authors = (props) => {
   const { loading, error, data } = useQuery(GET_AUTHORS);
@@ -31,6 +32,7 @@ const Authors = (props) => {
           ))}
         </tbody>
       </table>
+      <UpdateAuthorForm />
     </div>
   );
 };
