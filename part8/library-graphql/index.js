@@ -66,10 +66,12 @@ const resolvers = {
     },
     allAuthors: async () => await Author.find({}),
   },
-  // Author: {
-  //   bookCount: (author) =>
-  //     books.filter((book) => book.author === author.name).length,
-  // },
+  Author: {
+    bookCount: async (author) => {
+      const books = await Book.find({}).populate('author');      
+      return books.filter((b) => b.author.name === author.name).length;
+    },
+  },
   Mutation: {
     addBook: async (root, args) => {
       try {
