@@ -2,27 +2,40 @@ import React, { useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { ALL_PERSONS, CREATE_PERSON } from '../gql/queries';
 
-const PersonForm = ({setError}) => {
+const PersonForm = ({ setError }) => {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [street, setStreet] = useState('');
   const [city, setCity] = useState('');
 
-  const [ createPerson ] = useMutation(CREATE_PERSON, {
-    refetchQueries: [ { query: ALL_PERSONS } ],
+  const [createPerson] = useMutation(CREATE_PERSON, {
     onError: (error) => {
-        console.log(error.message);
-        
-        // const errors = error.graphQLErrors[0].extensions.stacktrace[0]
-        // const messages = Object.values(error).map(e => e.message).join('\n')
-        setError(error.message)
-      }
-  })
+      console.log(error.message);
+
+      // const errors = error.graphQLErrors[0].extensions.stacktrace[0]
+      // const messages = Object.values(error).map(e => e.message).join('\n')
+      setError(error.message);
+    },
+    update: (cache, response) => {
+      cache.updateQuery({ query: ALL_PERSONS }, ({ allPersons }) => {
+        return {
+          allPersons: allPersons.concat(response.data.addPerson),
+        };
+      });
+    },
+  });
 
   const submit = (event) => {
     event.preventDefault();
 
-    createPerson({ variables: { name, phone, street, city } });
+    createPerson({
+      variables: {
+        name,
+        street,
+        city,
+        phone: phone.length > 0 ? phone : undefined,
+      },
+    });
 
     setName('');
     setPhone('');
