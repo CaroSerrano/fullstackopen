@@ -95,15 +95,24 @@ const resolvers = {
       }
     },
 
-    // editAuthor: (root, args) => {
-    //   const author = authors.find((a) => a.name === args.name);
-    //   if (!author) {
-    //     return null;
-    //   }
-    //   const updatedAuthor = { ...author, born: args.setBornTo };
-    //   authors = authors.map((a) => (a.name === args.name ? updatedAuthor : a));
-    //   return updatedAuthor;
-    // },
+    editAuthor: async (root, args) => {
+      try {
+        const author = Author.findOneAndUpdate(
+          { name: args.name },
+          { born: args.setBornTo },
+          { new: true }
+        );
+        return author;
+      } catch (error) {
+        throw new GraphQLError('Updating author failed', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args.name,
+            error,
+          },
+        });
+      }
+    },
   },
 };
 
