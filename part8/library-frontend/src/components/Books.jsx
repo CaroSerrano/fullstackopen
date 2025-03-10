@@ -1,10 +1,15 @@
+import { useEffect, useState } from 'react';
 import { GET_BOOKS } from '../queries';
 import { useQuery } from '@apollo/client';
 
 const Books = (props) => {
+  const [filter, setFilter] = useState('');
   const { loading, error, data } = useQuery(GET_BOOKS);
+  const filteredResult = useQuery(GET_BOOKS, {
+    variables: { genre: filter },
+  });
 
-  if (!props.show) {// eslint-disable-line
+  if (!props.show) {
     return null;
   }
 
@@ -12,6 +17,7 @@ const Books = (props) => {
   if (error) return <p>Error : {error.message}</p>;
 
   const books = data.allBooks;
+  const genres = new Set(books.flatMap((b) => b.genres));
 
   return (
     <div>
@@ -24,15 +30,35 @@ const Books = (props) => {
             <th>author</th>
             <th>published</th>
           </tr>
-          {books.map((a) => (
-            <tr key={a.title}>
-              <td>{a.title}</td>
-              <td>{a.author.name}</td>
-              <td>{a.published}</td>
-            </tr>
-          ))}
+          {filter === '' &&
+            books.map((a) => (
+              <tr key={a.title}>
+                <td>{a.title}</td>
+                <td>{a.author.name}</td>
+                <td>{a.published}</td>
+              </tr>
+            ))}
+          {filter !== '' &&
+            filteredResult.data.allBooks.map((a) => (
+              <tr key={a.title}>
+                <td>{a.title}</td>
+                <td>{a.author.name}</td>
+                <td>{a.published}</td>
+              </tr>
+            ))}
         </tbody>
       </table>
+      <div>
+        <h3>Filter by genre</h3>
+        <select value={filter} onChange={(e) => setFilter(e.target.value)}>
+          <option value={''}>all genres</option>
+          {[...genres].map((g) => (
+            <option key={g} value={g}>
+              {g}
+            </option>
+          ))}
+        </select>
+      </div>
     </div>
   );
 };
