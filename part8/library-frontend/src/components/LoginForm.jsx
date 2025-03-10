@@ -1,16 +1,17 @@
 import { useState } from 'react';
-import { LOGIN } from '../queries';
+import { LOGIN, ME } from '../queries';
 import { useMutation } from '@apollo/client';
 
 const LoginForm = (props) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [login, result] = useMutation(LOGIN);
+  const [login, result] = useMutation(LOGIN, {
+    refetchQueries: ME
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     await login({ variables: { username, password } });
-    console.log(result.data);
     if (result.data) {
       localStorage.setItem('library-logged-user', result.data.login.value);
       props.setToken(result.data.login.value);

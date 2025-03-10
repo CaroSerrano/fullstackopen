@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { GET_BOOKS } from '../queries';
 import { useQuery } from '@apollo/client';
 
