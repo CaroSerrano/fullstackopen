@@ -18,7 +18,7 @@ const NewBook = (props) => {
   if (loading) return 'Submitting...';
   if (error) return `Submission error! ${error.message}`;
 
-  if (!props.show) {// eslint-disable-line
+  if (!props.show) {
     return null
   }
 
