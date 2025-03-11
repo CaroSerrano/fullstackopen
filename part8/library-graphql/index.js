@@ -50,6 +50,7 @@ const typeDefs = gql`
     name: String!
     id: ID!
     born: Int
+    books: [Book!]
     bookCount: Int
   }
 
@@ -101,13 +102,12 @@ const resolvers = {
         return matchesAuthor && matchesGenre;
       });
     },
-    allAuthors: async () => await Author.find({}),
+    allAuthors: async () => await Author.find({}).populate('books'),
     me: (root, args, context) => context.currentUser,
   },
   Author: {
-    bookCount: async (author) => {
-      const books = await Book.find({}).populate('author');
-      return books.filter((b) => b.author.name === author.name).length;
+    bookCount: (author) => {
+      return author.books ? author.books.length : 0;
     },
   },
   Mutation: {
@@ -118,14 +118,22 @@ const resolvers = {
         });
       }
       try {
-        const author = await Author.findOneAndUpdate(
-          { name: args.author },
-          { name: args.author },
-          { new: true, upsert: true }
-        );
-        const book = new Book({ ...args, author });
+        let author = await Author.findOne({ name: args.author });
+
+        if (!author) {
+          author = new Author({ name: args.author, books: [] });
+          await author.save();
+        }
+
+        console.log('author antes', author);
+
+        const book = new Book({ ...args, author: author._id });
         await book.save();
-        pubsub.publish('BOOK_ADDED', { bookAdded: book })
+
+        author.books.push(book._id);
+        await author.save();
+        console.log("author despues ",author);
+
         return book;
       } catch (error) {
         throw new GraphQLError('Error saving book or author', {
@@ -213,7 +221,7 @@ app.use(
           auth.startsWith('Bearer ') ? auth.substring(7) : auth,
           process.env.JWT_SECRET
         );
-        const currentUser = await User.findById(decodedToken.id)
+        const currentUser = await User.findById(decodedToken.id);
 
         return { currentUser };
       }
