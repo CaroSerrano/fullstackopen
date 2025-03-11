@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { LOGIN } from '../gql/queries';
 
@@ -11,19 +11,26 @@ const LoginForm = ({ setError, setToken }) => {
       setError(error.message);
     },
   });
+  
 
-  useEffect(() => {
+  // useEffect(() => {
+  //   if (result.data) {
+  //     const token = result.data.login.value;
+  //     setToken(token);
+  //     localStorage.setItem('phonenumbers-user-token', token);
+  //   }
+  // }, [result]); // eslint-disable-line
+
+  const submit = async (e) => {
+    e.preventDefault();
+    await login({ variables: { username, password } });
+    
     if (result.data) {
-      const token = result.data.login.value;
-      setToken(token);
-      localStorage.setItem('phonenumbers-user-token', token);
+      localStorage.setItem('phonenumbers-user-token', result.data.login.value);
+      setToken(result.data.login.value);
+      setUsername('')
+      setPassword('')
     }
-  }, [result.data]); // eslint-disable-line
-
-  const submit = async (event) => {
-    event.preventDefault();
-
-    login({ variables: { username, password } });
   };
 
   return (

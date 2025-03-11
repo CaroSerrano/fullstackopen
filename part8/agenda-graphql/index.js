@@ -1,11 +1,12 @@
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import express from 'express';
+import cors from 'cors';
 import { createServer } from 'http';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { WebSocketServer } from 'ws';
-import { useServer } from 'graphql-ws/use/ws';
+import { useServer } from 'graphql-ws/use/ws'; //letuve que borrar el /lib
 import { GraphQLError } from 'graphql';
 import { PubSub } from 'graphql-subscriptions';
 import mongoose from 'mongoose';
@@ -137,6 +138,8 @@ const resolvers = {
         });
       }
       const userForToken = { username: user.username, id: user._id };
+      console.log('userForToken', userForToken);
+
       return { value: jwt.sign(userForToken, process.env.JWT_SECRET) };
     },
     addAsFriend: async (root, args, { currentUser }) => {
@@ -176,6 +179,7 @@ const serverCleanup = useServer({ schema }, wsServer);
 
 const server = new ApolloServer({
   schema,
+  introspection: process.env.NODE_ENV !== 'production',
   plugins: [
     // Proper shutdown for the HTTP server.
     ApolloServerPluginDrainHttpServer({ httpServer }),
@@ -197,9 +201,11 @@ await server.start();
 app.use(
   '/',
   express.json(),
+  cors(),
   expressMiddleware(server, {
     context: async ({ req }) => {
-      const auth = req.headers.authorization;
+      const auth = req ? req.headers.authorization : null;
+      console.log('auth', auth);
 
       if (auth) {
         const decodedToken = jwt.verify(
@@ -209,6 +215,7 @@ app.use(
         const currentUser = await User.findById(decodedToken.id).populate(
           'friends'
         );
+        console.log('currentUser', currentUser);
 
         return { currentUser };
       }
@@ -217,5 +224,5 @@ app.use(
 );
 
 httpServer.listen({ port: 4000 }, () =>
-  console.log(`Server is now running on http://localhost:4000/`)
+  console.log(`Server is now running on http://localhost:4000`)
 );

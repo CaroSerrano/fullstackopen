@@ -4,13 +4,13 @@ const PERSON_DETAILS = gql`
   fragment PersonDetails on Person {
     id
     name
-    phone 
+    phone
     address {
-      street 
+      street
       city
     }
   }
-`
+`;
 
 export const ALL_PERSONS = gql`
   query {
@@ -18,7 +18,7 @@ export const ALL_PERSONS = gql`
       ...PersonDetails
     }
   }
-    ${PERSON_DETAILS}
+  ${PERSON_DETAILS}
 `;
 
 export const CREATE_PERSON = gql`
@@ -32,7 +32,7 @@ export const CREATE_PERSON = gql`
       ...PersonDetails
     }
   }
-    ${PERSON_DETAILS}
+  ${PERSON_DETAILS}
 `;
 
 export const FIND_PERSON = gql`
@@ -41,7 +41,7 @@ export const FIND_PERSON = gql`
       ...PersonDetails
     }
   }
-    ${PERSON_DETAILS}
+  ${PERSON_DETAILS}
 `;
 
 export const EDIT_NUMBER = gql`
@@ -50,7 +50,7 @@ export const EDIT_NUMBER = gql`
       ...PersonDetails
     }
   }
-    ${PERSON_DETAILS}
+  ${PERSON_DETAILS}
 `;
 
 export const LOGIN = gql`
@@ -59,4 +59,13 @@ export const LOGIN = gql`
       value
     }
   }
+`;
+
+export const PERSON_ADDED = gql`
+  subscription {
+    personAdded {
+      ...PersonDetails
+    }
+  }
+  ${PERSON_DETAILS}
 `;
