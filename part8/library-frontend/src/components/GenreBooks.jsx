@@ -2,25 +2,29 @@ import { GET_BOOKS, ME } from '../queries';
 import { useQuery } from '@apollo/client';
 
 const GenreBooks = ({ show }) => {
-  const currentUser = useQuery(ME);
+  const { data: userData, loading: userLoading } = useQuery(ME);
+  
+  const favoriteGenre = userData?.me?.favoriteGenre || null;
+  
   const { loading, error, data } = useQuery(GET_BOOKS, {
-    variables: { genre: currentUser.data.me.favoriteGenre },
+    variables: { genre: favoriteGenre },
+    skip: !favoriteGenre, // Evita hacer la consulta si no hay un género favorito
   });
 
   if (!show) {
     return null;
   }
 
-  if (loading) return <p>Loading...</p>;
+  if (userLoading || loading) return <p>Loading...</p>;
   if (error) return <p>Error : {error.message}</p>;
+  if (!data) return null;
 
   const books = data.allBooks;
 
   return (
     <div>
       <h2>recommendations</h2>
-      books in your favorite genre{' '}
-      <strong>{currentUser.data.me.favoriteGenre}</strong>
+      books in your favorite genre <strong>{favoriteGenre}</strong>
       <table>
         <tbody>
           <tr>
