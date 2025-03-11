@@ -47,6 +47,7 @@ const typeDefs = `
     name: String!
     phone: String
     address: Address!
+    friendOf: [User!]!
     id: ID!
   }
   type User {
@@ -80,9 +81,9 @@ const resolvers = {
     personCount: async () => await Person.collection.countDocuments(),
     allPersons: async (root, args) => {
       if (!args.phone) {
-        return await Person.find({});
+        return await Person.find({}).populate('friendOf')
       }
-      return await Person.find({ phone: { $exists: args.phone === 'YES' } });
+      return await Person.find({ phone: { $exists: args.phone === 'YES' } }).populate('friendOf');
     },
     findPerson: async (root, args) => await Person.findOne({ name: args.name }),
     me: (root, args, context) => context.currentUser,
