@@ -1,6 +1,11 @@
 import express from 'express';
 import calculateBmi from './bmiCalculator';
+import calculateExercises from './exerciseCalculator';
+import { parseBody } from './exerciseCalculator';
+
 const app = express();
+
+app.use(express.json());
 
 app.get('/ping', (_req, res) => {
   res.send('pong');
@@ -24,6 +29,21 @@ app.get('/bmi', (req, res) => {
     weight: Number(weight),
   });
   res.json({ weight: Number(weight), height: Number(height), bmi: bmiResult });
+});
+
+app.post('/exercises', (req, res) => {
+  const { daily_exercises, target } = req.body;
+  if(!daily_exercises || !target){
+    res.json({error: 'Parameters missing'})
+  }
+  try {
+    const exercisesResult = calculateExercises(
+      parseBody({ daily_exercises, target })
+    );
+    res.json(exercisesResult);
+  } catch (error) {
+    res.json({ error: error.message });
+  }
 });
 
 const PORT = 3003;

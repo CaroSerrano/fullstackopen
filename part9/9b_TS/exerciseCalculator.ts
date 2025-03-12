@@ -24,14 +24,14 @@ function calculateRating(average: number, target: number): ratingResult {
 }
 
 interface CalculatorValues {
-  hours: number[];
+  daily_exercises: number[];
   target: number;
 }
 
 const parseArguments = (args: string[]): CalculatorValues => {
   if (args.length < 2) throw new Error('Not enough arguments');
   let hoursArray: number[] = [];
-  for (let i = 2; i < args.length; i++) {    
+  for (let i = 2; i < args.length; i++) {
     if (isNaN(Number(args[i]))) {
       throw new Error('Provided values were not numbers!');
     } else if (i === 2) {
@@ -43,22 +43,38 @@ const parseArguments = (args: string[]): CalculatorValues => {
 
   return {
     target: Number(args[2]),
-    hours: hoursArray,
+    daily_exercises: hoursArray,
+  };
+};
+
+export const parseBody = (args: CalculatorValues): CalculatorValues => {
+  if (Object.keys(args).length < 2) throw new Error('Not enough arguments');
+  if (isNaN(Number(args.target))) {
+    throw new Error('Provided target value was not a number');
+  }
+  for (let i = 0; i < args.daily_exercises.length; i++) {
+    if (isNaN(Number(args.daily_exercises[i]))) {
+      throw new Error('Provided daily_exercises values were not numbers!');
+    }
+  }
+
+  return {
+    target: Number(args.target),
+    daily_exercises: args.daily_exercises,
   };
 };
 
 function calculateExercises(args: CalculatorValues): Result {
-  
   const averageValue =
-    args.hours.reduce(
+    args.daily_exercises.reduce(
       (accumulator, currentValue) => accumulator + currentValue,
       0
-    ) / args.hours.length;
+    ) / args.daily_exercises.length;
   const ratingResult = calculateRating(averageValue, args.target);
 
   const result: Result = {
-    periodLength: args.hours.length,
-    trainingDays: args.hours.filter((day) => day !== 0).length,
+    periodLength: args.daily_exercises.length,
+    trainingDays: args.daily_exercises.filter((day) => day !== 0).length,
     success: averageValue >= args.target,
     rating: ratingResult.rating,
     ratingDescription: ratingResult.ratingDescription,
@@ -77,3 +93,5 @@ try {
   }
   console.log(errorMessage);
 }
+
+export default calculateExercises;
