@@ -23,22 +23,57 @@ function calculateRating(average: number, target: number): ratingResult {
   }
 }
 
-function calculateExercises(hours: number[], target: number): Result {
+interface CalculatorValues {
+  hours: number[];
+  target: number;
+}
+
+const parseArguments = (args: string[]): CalculatorValues => {
+  if (args.length < 2) throw new Error('Not enough arguments');
+  let hoursArray: number[] = [];
+  for (let i = 2; i < args.length; i++) {    
+    if (isNaN(Number(args[i]))) {
+      throw new Error('Provided values were not numbers!');
+    } else if (i === 2) {
+      continue;
+    } else {
+      hoursArray.push(Number(args[i]));
+    }
+  }
+
+  return {
+    target: Number(args[2]),
+    hours: hoursArray,
+  };
+};
+
+function calculateExercises(args: CalculatorValues): Result {
+  
   const averageValue =
-    hours.reduce((accumulator, currentValue) => accumulator + currentValue, 0) /
-    hours.length;
-  const ratingResult = calculateRating(averageValue, target);
+    args.hours.reduce(
+      (accumulator, currentValue) => accumulator + currentValue,
+      0
+    ) / args.hours.length;
+  const ratingResult = calculateRating(averageValue, args.target);
 
   const result: Result = {
-    periodLength: hours.length,
-    trainingDays: hours.filter((day) => day !== 0).length,
-    success: averageValue >= target,
+    periodLength: args.hours.length,
+    trainingDays: args.hours.filter((day) => day !== 0).length,
+    success: averageValue >= args.target,
     rating: ratingResult.rating,
     ratingDescription: ratingResult.ratingDescription,
-    target,
+    target: args.target,
     average: averageValue,
   };
   return result;
 }
-
-console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2))
+try {
+  const arguments = parseArguments(process.argv);
+  console.log(calculateExercises(arguments));
+} catch (error: unknown) {
+  let errorMessage = 'Something bad happened.';
+  if (error instanceof Error) {
+    errorMessage += ' Error: ' + error.message;
+  }
+  console.log(errorMessage);
+}
