@@ -68,8 +68,8 @@ function calculateExercises(args: CalculatorValues): Result {
   return result;
 }
 try {
-  const arguments = parseArguments(process.argv);
-  console.log(calculateExercises(arguments));
+  const calcAguments = parseArguments(process.argv);
+  console.log(calculateExercises(calcAguments));
 } catch (error: unknown) {
   let errorMessage = 'Something bad happened.';
   if (error instanceof Error) {
