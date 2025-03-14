@@ -21,6 +21,7 @@ const addPatient = (entry: NewPatient): Patient =>  {
   };
 
   patients.push(newPatient);
+  console.log(patients)
   return newPatient;
 }
 
