@@ -12,14 +12,13 @@ function App() {
     });
   }, []);
 
-
-  if(!diaryEntries || diaryEntries.length === 0){
-    return null
+  if (!diaryEntries || diaryEntries.length === 0) {
+    return null;
   }
 
   return (
     <>
-      <Content diaryEntries={diaryEntries} />
+      <Content diaryEntries={diaryEntries} setDiaryEntries={setDiaryEntries} />
     </>
   );
 }
