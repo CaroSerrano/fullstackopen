@@ -1,4 +1,6 @@
-import { Patient, Diagnosis } from '../types';
+import { Patient } from '../../types';
+
+import EntryDetails from './EntryDetails';
 
 import FemaleIcon from '@mui/icons-material/Female';
 import MaleIcon from '@mui/icons-material/Male';
@@ -7,7 +9,7 @@ import TransgenderIcon from '@mui/icons-material/Transgender';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 
-import diagnosesService from '../services/diagnoses';
+
 
 interface Props {
   patients: Patient[];
@@ -15,13 +17,11 @@ interface Props {
 
 const PatientView = ({ patients }: Props) => {
   const [errorMessage, setErrorMessage] = useState('');
-  const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
+
 
   const { id } = useParams();
   const patient = patients.find((p) => p.id === id);
-  useEffect(() => {
-    diagnosesService.getAll().then((data) => setDiagnoses(data));
-  }, []);
+
   useEffect(() => {
     if (!patient) {
       setErrorMessage(`Unable to find patient with id ${id}`);
@@ -46,21 +46,8 @@ const PatientView = ({ patients }: Props) => {
       {patient.entries.length > 0 &&
         patient.entries.map((e) => {
           return (
-            <div>
-              <p>{e.date}</p>
-              <p>{e.description}</p>
-              <ul>
-                {e.diagnosisCodes?.map((c) => {
-                  const diagnosisName = diagnoses.find(
-                    (d) => d.code === c
-                  )?.name;
-                  return (
-                    <li>
-                      {c}: {diagnosisName}
-                    </li>
-                  );
-                })}
-              </ul>
+            <div key={e.id}>
+            <EntryDetails  {...e}/>
             </div>
           );
         })}
