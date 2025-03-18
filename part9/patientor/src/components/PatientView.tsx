@@ -25,7 +25,7 @@ const PatientView = ({ patients }: Props) => {
   if (!patient) {
     return <p>{errorMessage}</p>;
   }
-
+  
   return (
     <div>
       <h2>
@@ -36,6 +36,20 @@ const PatientView = ({ patients }: Props) => {
 
       <p>{patient.ssn}</p>
       <p>{patient.occupation}</p>
+      {patient.entries.length > 0 &&
+        patient.entries.map((e) => {
+          return (
+            <div>
+              <p>{e.date}</p>
+              <p>{e.description}</p>
+              <ul>
+                {e.diagnosisCodes?.map((c) => {
+                  return <li>{c}</li>;
+                })}
+              </ul>
+            </div>
+          );
+        })}
     </div>
   );
 };
