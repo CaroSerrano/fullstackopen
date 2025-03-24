@@ -141,10 +141,7 @@ const baseEntryFields = (object: any) => ({
   date: parseStringParam(object.date),
   description: parseStringParam(object.description),
   specialist: parseStringParam(object.specialist),
-  diagnosisCodes:
-    'diagnosisCodes' in object
-      ? parseDiagnosisCodes(object.diagnosisCodes)
-      : [],
+  diagnosisCodes: parseDiagnosisCodes(object),
 });
 
 export const toNewEntry = (object: unknown): EntryWithoutId => {
