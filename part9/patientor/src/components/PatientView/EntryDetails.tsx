@@ -31,11 +31,11 @@ const BaseEntry = (entry: Entry) => {
         {entry.date}
       </Typography>
       {entry.diagnosisCodes ? <ul>
-        Diagnoses:{' '}
+        <Typography>Diagnoses:</Typography>
         {entry.diagnosisCodes?.map((c) => {
           const diagnosis = diagnoses.find((d) => d.code === c);
           const diagnosisName = diagnosis?.name;
-          return <li key={c}>{diagnosisName}</li>;
+          return <li key={c}><Typography>{diagnosisName}</Typography></li>;
         })}
       </ul> : null}
       <Typography variant='body1'>{entry.description}</Typography>

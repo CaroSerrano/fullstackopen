@@ -8,10 +8,12 @@ import MaleIcon from '@mui/icons-material/Male';
 import TransgenderIcon from '@mui/icons-material/Transgender';
 import {
   Button,
+  Container,
   FormControl,
   InputLabel,
   MenuItem,
   Stack,
+  Typography,
 } from '@mui/material';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 
@@ -68,53 +70,54 @@ const PatientView = ({ patients }: Props) => {
   };
 
   return (
-    <div>
-      <h2>
-        {patient.name} {patient.gender === 'female' && <FemaleIcon />}
-        {patient.gender === 'male' && <MaleIcon />}{' '}
-        {patient.gender === 'other' && <TransgenderIcon />}
-      </h2>
-
-      <p>{patient.ssn}</p>
-      <p>{patient.occupation}</p>
-
+    <Container style={{ margin: '1em', padding: '1em' }}>
       <Stack spacing={2}>
-        <h3>Add new entry</h3>
-        <FormControl sx={{ m: 1, minWidth: 120 }}>
-          <InputLabel id='select-label'>Select entry type</InputLabel>
-          <Select
-            labelId='select-label'
-            value={selectedEntryForm}
-            displayEmpty
-            onChange={handleSelectChange}
+        <Typography variant='h4'>
+          {patient.name} {patient.gender === 'female' && <FemaleIcon />}
+          {patient.gender === 'male' && <MaleIcon />}{' '}
+          {patient.gender === 'other' && <TransgenderIcon />}
+        </Typography>
+        <Typography variant='h6'>SSN: {patient.ssn}</Typography>
+        <Typography variant='h6'>Occupation: {patient.occupation}</Typography>
+       
+          <Typography variant='h5' style={{ fontWeight: 'bold' }}>
+            Add new entry
+          </Typography>
+          <FormControl sx={{ m: 1, minWidth: 120 }}>
+            <InputLabel id='select-label'>Select entry type</InputLabel>
+            <Select
+              labelId='select-label'
+              value={selectedEntryForm}
+              displayEmpty
+              onChange={handleSelectChange}
+            >
+              <MenuItem value='Hospital'>Hospital</MenuItem>
+              <MenuItem value='HealthCheck'>Heath Check</MenuItem>
+              <MenuItem value='OccupationalHealthCare'>
+                Occupational Health Care
+              </MenuItem>
+            </Select>
+          </FormControl>
+          <DisplayEntryForm
+            modalOpen={modalOpen}
+            onClose={closeModal}
+            patientId={patient.id}
+            selectedEntryForm={selectedEntryForm}
+            entries={entries}
+            setEntries={setEntries}
+          />
+          <Button
+            variant='contained'
+            onClick={() => openModal()}
+            disabled={disableButton}
           >
-            <MenuItem value='Hospital'>Hospital</MenuItem>
-            <MenuItem value='HealthCheck'>Heath Check</MenuItem>
-            <MenuItem value='OccupationalHealthCare'>
-              Occupational Health Care
-            </MenuItem>
-          </Select>
-        </FormControl>
-        <DisplayEntryForm
-          modalOpen={modalOpen}
-          onClose={closeModal}
-          patientId={patient.id}
-          selectedEntryForm={selectedEntryForm}
-          entries={entries}
-          setEntries={setEntries}
-        />
-        <Button
-          variant='contained'
-          onClick={() => openModal()}
-          disabled={disableButton}
-        >
-          Add New Entry
-        </Button>
+            Add New Entry
+          </Button>
       </Stack>
 
       <br />
       <div>
-        <h3>Entries</h3>
+        <Typography variant='h5'>Entries</Typography>
         {entries.length > 0 &&
           entries.map((e) => {
             return (
@@ -124,7 +127,7 @@ const PatientView = ({ patients }: Props) => {
             );
           })}
       </div>
-    </div>
+    </Container>
   );
 };
 
