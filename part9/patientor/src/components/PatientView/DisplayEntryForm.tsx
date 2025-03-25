@@ -1,6 +1,7 @@
 import { Entry } from '../../types';
 import HealthCheckEntryForm from './HealthCheckEntryForm';
 import HospitalEntryForm from './HospitalEntryForm';
+import OccupationalEntryForm from './OccupationalEntryForm';
 
 interface EntryFormProps {
   modalOpen: boolean;
@@ -41,7 +42,15 @@ const DisplayEntryForm = ({
         />
       );
     case 'OccupationalHealthCare':
-      break;
+      return (
+        <OccupationalEntryForm
+          modalOpen={modalOpen}
+          onCancel={onClose}
+          patientId={patientId}
+          setEntries={setEntries}
+          entries={entries}
+        />
+      );
 
     default:
       return null;
